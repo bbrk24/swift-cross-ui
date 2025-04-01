@@ -20,6 +20,7 @@
       }
     ],
     "role" : "collectionGroup",
+    "roleHeading" : "API Collection",
     "title" : "OptionSet Implementations"
   },
   "schemaVersion" : {
@@ -72,7 +73,7 @@
 "doc://SwiftCrossUI/documentation/SwiftCrossUI": {
   "abstract" : [
     {
-      "text" : "Create cross-platform desktop apps for macOS, Linux and Windows.",
+      "text" : "Create cross-platform desktop apps for macOS, Linux, Windows, iOS and tvOS.",
       "type" : "text"
     }
   ],
@@ -548,6 +549,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
@@ -581,6 +583,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
@@ -699,6 +702,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
@@ -715,6 +719,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
@@ -882,6 +887,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
@@ -898,6 +904,7 @@
     },
     {
       "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:s10SetAlgebraP7ElementQa",
       "text" : "Element"
     },
     {
