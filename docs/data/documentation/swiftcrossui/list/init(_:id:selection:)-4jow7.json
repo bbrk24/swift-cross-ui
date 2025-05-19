@@ -3,6 +3,7 @@
     "paths" : [
       [
         "doc:\/\/SwiftCrossUI\/documentation\/SwiftCrossUI",
+        "doc:\/\/SwiftCrossUI\/documentation\/SwiftCrossUI\/Controls",
         "doc:\/\/SwiftCrossUI\/documentation\/SwiftCrossUI\/List"
       ]
     ]
@@ -114,7 +115,7 @@
     ],
     "remoteSource" : {
       "fileName" : "List.swift",
-      "url" : "https:\/\/github.com\/stackotter\/swift-cross-ui\/blob\/main\/Sources\/SwiftCrossUI\/Views\/List.swift#L43"
+      "url" : "https:\/\/github.com\/stackotter\/swift-cross-ui\/blob\/main\/Sources\/SwiftCrossUI\/Views\/List.swift#L45"
     },
     "role" : "symbol",
     "roleHeading" : "Initializer",
@@ -414,6 +415,17 @@
   "title" : "Binding",
   "type" : "topic",
   "url" : "\/documentation\/swiftcrossui\/binding"
+},
+"doc://SwiftCrossUI/documentation/SwiftCrossUI/Controls": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/SwiftCrossUI\/documentation\/SwiftCrossUI\/Controls",
+  "kind" : "article",
+  "role" : "collectionGroup",
+  "title" : "Controls",
+  "type" : "topic",
+  "url" : "\/documentation\/swiftcrossui\/controls"
 },
 "doc://SwiftCrossUI/documentation/SwiftCrossUI/List": {
   "abstract" : [
