@@ -62,7 +62,8 @@ jobs:
         swift build --target PathsExample && \
         swift build --target WebViewExample && \
         swift build --target HoverExample && \
-        swift build --target AdvancedCustomizationExample
+        swift build --target AdvancedCustomizationExample && \
+        swift build --target MusicPlayerExample
 
   uikit:
     runs-on: macos-15
@@ -121,6 +122,8 @@ jobs:
             if [ $device_type != TV ]; then
               # Slider is not implemented for tvOS
               buildtarget RandomNumberGeneratorExample
+              # EnvironmentValues.chooseFile is not implemented for tvOS
+              buildtarget MusicPlayerExample
             fi
 
             if [ $device_type = iPad ]; then
@@ -183,6 +186,9 @@ jobs:
         buildtarget HoverExample
         buildtarget AdvancedCustomizationExample
         buildtarget SplitExample
+        buildtarget MusicPlayerExample
+        # TODO test whether this works on Catalyst
+        # buildtarget SplitExample
 
   windows:
     runs-on: windows-latest
@@ -333,7 +339,8 @@ jobs:
         swift build --target NotesExample && \
         swift build --target PathsExample && \
         swift build --target HoverExample && \
-        swift build --target AdvancedCustomizationExample
+        swift build --target AdvancedCustomizationExample && \
+        swift build --target MusicPlayerExample
 
   assemble-docs:
     runs-on: macos-15

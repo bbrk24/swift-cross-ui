@@ -8,11 +8,20 @@ public struct Divider: View, Sendable {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.layoutOrientation) var layoutOrientation
 
-    /// Creates a divider.
-    public init() {}
+    let requestedColor: Color?
+
+    /// Creates a divider. Uses the provided color, or adapts to the current
+    /// color scheme if nil.
+    public init(_ color: Color? = nil) {
+        self.requestedColor = color
+    }
+
+    var color: Color {
+        requestedColor ?? Color.adaptive(light: .black, dark: .white)
+    }
 
     public var body: some View {
-        Color.adaptive(light: .black, dark: .white)
+        color
             .opacity(0.1)
             .frame(
                 width: layoutOrientation == .horizontal ? 1 : nil,

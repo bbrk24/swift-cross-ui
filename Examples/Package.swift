@@ -31,6 +31,10 @@ let package = Package(
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .macCatalyst(.v13), .visionOS(.v1)],
     dependencies: [
         .package(name: "swift-cross-ui", path: ".."),
+        .package(
+            url: "https://github.com/stackotter/swift-miniaudio",
+            .upToNextMinor(from: "0.1.2")
+        ),
     ] + hotReloadingDependencies,
     targets: [
         .executableTarget(
@@ -98,6 +102,12 @@ let package = Package(
         .executableTarget(
             name: "ColorsExample",
             dependencies: exampleDependencies
+        ),
+        .executableTarget(
+            name: "MusicPlayerExample",
+            dependencies: [
+                .product(name: "MiniAudio", package: "swift-miniaudio")
+            ] + exampleDependencies
         )
     ]
 )
