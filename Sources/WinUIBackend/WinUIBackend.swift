@@ -71,6 +71,7 @@ public final class WinUIBackend: AppBackend {
     public let supportedDatePickerStyles: [DatePickerStyle] = [
         .automatic, .graphical, .compact, .wheel,
     ]
+    public static let supportedPickerStyles: [BackendPickerStyle] = [.menu]
 
     public var scrollBarWidth: Int {
         12
@@ -915,7 +916,11 @@ public final class WinUIBackend: AppBackend {
         slider.value = value
     }
 
-    public func createPicker() -> Widget {
+    public func createPicker(style: BackendPickerStyle) -> Widget {
+        if style != .menu {
+            fatalError("unsupported picker style")
+        }
+
         let picker = CustomComboBox()
         picker.selectionChanged.addHandler { [weak picker] _, _ in
             guard let picker else { return }

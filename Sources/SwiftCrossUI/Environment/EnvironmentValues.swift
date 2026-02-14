@@ -274,6 +274,8 @@ public struct EnvironmentValues {
     /// The display styles supported by ``DatePicker``. ``datePickerStyle`` must be one of these.
     public let supportedDatePickerStyles: [DatePickerStyle]
 
+    public var pickerStyle: any PickerStyle
+
     /// Creates the default environment.
     package init<Backend: AppBackend>(
         backend: Backend,
@@ -310,6 +312,7 @@ public struct EnvironmentValues {
         timeZone = .current
         datePickerStyle = .automatic
         openWindowFunctionsByID = Box([:])
+        pickerStyle = .automatic
 
         let supportedDatePickerStyles = backend.supportedDatePickerStyles
         if supportedDatePickerStyles.isEmpty {

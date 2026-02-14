@@ -39,6 +39,7 @@ public final class GtkBackend: AppBackend {
     public let deviceClass = DeviceClass.desktop
     public let defaultSheetCornerRadius = 10
     public let supportedDatePickerStyles: [DatePickerStyle] = [.automatic, .graphical]
+    public static let supportedPickerStyles: [BackendPickerStyle] = [.menu]
 
     var gtkApp: Application
 
@@ -1024,7 +1025,11 @@ public final class GtkBackend: AppBackend {
         return textEditor.buffer.text
     }
 
-    public func createPicker() -> Widget {
+    public func createPicker(style: BackendPickerStyle) -> Widget {
+        if style != .menu {
+            fatalError("unsupported picker style")
+        }
+
         return DropDown(strings: [])
     }
 

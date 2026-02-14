@@ -77,12 +77,14 @@ struct ControlsApp: App {
                             }
                         #endif
 
-                        VStack {
-                            Text("Slider")
-                            Slider(value: $sliderValue, in: 0...10)
-                                .frame(maxWidth: 200)
-                            Text("Value: \(String(format: "%.02f", sliderValue))")
-                        }
+                        #if !os(tvOS)
+                            VStack {
+                                Text("Slider")
+                                Slider(value: $sliderValue, in: 0...10)
+                                    .frame(maxWidth: 200)
+                                Text("Value: \(String(format: "%.02f", sliderValue))")
+                            }
+                        #endif
 
                         VStack {
                             Text("Text field")
@@ -90,14 +92,17 @@ struct ControlsApp: App {
                             Text("Value: \(text)")
                         }
 
-                        VStack {
-                            Toggle(
-                                "Enable ProgressView resizability", isOn: $isProgressViewResizable)
-                            Slider(value: $progressViewSize, in: 10...100)
-                            ProgressView()
-                                .resizable(isProgressViewResizable)
-                                .frame(width: progressViewSize, height: progressViewSize)
-                        }
+                        #if !os(tvOS)
+                            VStack {
+                                Toggle(
+                                    "Enable ProgressView resizability",
+                                    isOn: $isProgressViewResizable)
+                                Slider(value: $progressViewSize, in: 10...100)
+                                ProgressView()
+                                    .resizable(isProgressViewResizable)
+                                    .frame(width: progressViewSize, height: progressViewSize)
+                            }
+                        #endif
 
                         #if !canImport(Gtk3Backend)
                             VStack {

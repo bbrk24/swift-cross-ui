@@ -60,6 +60,24 @@ public final class UIKitBackend: AppBackend {
         #endif
     }
 
+    public static var defaultPickerStyle: BackendPickerStyle {
+        #if os(tvOS)
+            .segmented
+        #elseif os(visionOS)
+            .menu
+        #else
+            .wheel
+        #endif
+    }
+
+    public nonisolated static var supportedPickerStyles: [BackendPickerStyle] {
+        if #available(iOS 14, macCatalyst 14, tvOS 17, *) {
+            [.menu, .segmented, .wheel]
+        } else {
+            [.segmented, .wheel]
+        }
+    }
+
     var onTraitCollectionChange: (() -> Void)?
 
     private let appDelegateClass: ApplicationDelegate.Type

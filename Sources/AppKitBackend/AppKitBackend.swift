@@ -28,6 +28,7 @@ public final class AppKitBackend: AppBackend {
     public let supportsMultipleWindows = true
     public let deviceClass = DeviceClass.desktop
     public let supportedDatePickerStyles: [DatePickerStyle] = [.automatic, .graphical, .compact]
+    public static let supportedPickerStyles: [BackendPickerStyle] = [.menu]
 
     public var scrollBarWidth: Int {
         // We assume that all scrollers have their controlSize set to `.regular` by default.
@@ -789,7 +790,11 @@ public final class AppKitBackend: AppBackend {
         slider.doubleValue = value
     }
 
-    public func createPicker() -> Widget {
+    public func createPicker(style: BackendPickerStyle) -> Widget {
+        if style != .menu {
+            fatalError("unsupported picker style")
+        }
+
         return NSPopUpButton()
     }
 
