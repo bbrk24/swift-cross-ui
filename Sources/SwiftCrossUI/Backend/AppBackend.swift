@@ -885,7 +885,9 @@ public protocol AppBackend: Sendable {
 }
 
 extension AppBackend {
-    nonisolated static var defaultPickerStyle: BackendPickerStyle { supportedPickerStyles.first ?? .menu }
+    public nonisolated static var defaultPickerStyle: BackendPickerStyle {
+        supportedPickerStyles.first ?? .menu
+    }
 
     public func resolveTextStyle(
         _ textStyle: Font.TextStyle

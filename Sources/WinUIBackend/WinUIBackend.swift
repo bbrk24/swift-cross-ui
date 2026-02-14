@@ -918,7 +918,7 @@ public final class WinUIBackend: AppBackend {
 
     public func createPicker(style: BackendPickerStyle) -> Widget {
         if style != .menu {
-            fatalError("unsupported picker style")
+            assertionFailure("unsupported picker style")
         }
 
         let picker = CustomComboBox()
