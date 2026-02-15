@@ -231,7 +231,7 @@ final class UIButtonPicker: WrapperWidget<UIButton>, Picker {
                 UIAction(title: element, state: offset == selectedIndex ? .on : .off) {
                     [unowned self] _ in
 
-                    selectedIndex = $0
+                    selectedIndex = offset
                     onSelect?(offset)
                     updateMenu()
                 }
