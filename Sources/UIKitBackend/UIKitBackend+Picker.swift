@@ -209,6 +209,9 @@ final class UIButtonPicker: WrapperWidget<UIButton>, Picker {
 
         child.setImage(UIImage(systemName: imageName), for: .normal)
         child.showsMenuAsPrimaryAction = true
+
+        // Render the chevrons to the right of the text (they render to the left by default)
+        child.semanticContentAttribute = .forceRightToLeft
     }
 
     func setOptions(to options: [String]) {
