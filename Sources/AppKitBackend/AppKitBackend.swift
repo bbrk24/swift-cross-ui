@@ -2550,6 +2550,7 @@ final class RadioGroup: NSStackView {
         self.buttons = []
         super.init(frame: .zero)
         self.orientation = .vertical
+        self.alignment = .leading
         self.setAccessibilityRole(.radioGroup)
     }
 
