@@ -6,6 +6,37 @@ import SwiftCrossUI
     import SwiftBundlerRuntime
 #endif
 
+enum BuiltInPickerStyle: CaseIterable, Equatable {
+    case automatic, inline, menu, radioGroup, segmented, wheel
+
+    var asPickerStyle: any PickerStyle {
+        switch self {
+            case .automatic: .automatic
+            case .inline: .inline
+            case .menu: .menu
+            case .radioGroup: .radioGroup
+            case .segmented: .segmented
+            case .wheel: .wheel
+        }
+    }
+
+    @MainActor
+    var isSupported: Bool {
+        asPickerStyle.isSupported(DefaultBackend.self)
+    }
+
+    @MainActor
+    static var supportedOptions: [BuiltInPickerStyle] {
+        allCases.filter(\.isSupported)
+    }
+}
+
+extension View {
+    func existentialPickerStyle(_ style: any PickerStyle) -> some View {
+        AnyView(pickerStyle(style))
+    }
+}
+
 @main
 @HotReloadable
 struct ControlsApp: App {
@@ -22,6 +53,7 @@ struct ControlsApp: App {
     @State var menuToggleState = false
     @State var progressViewSize: Int = 10
     @State var isProgressViewResizable = true
+    @State var pickerStyle: BuiltInPickerStyle? = BuiltInPickerStyle.supportedOptions.first
 
     @Environment(\.supportedDatePickerStyles) var supportedDatePickerStyles
 
@@ -106,12 +138,25 @@ struct ControlsApp: App {
 
                         #if !canImport(Gtk3Backend)
                             VStack {
-                                Text("Drop down")
+                                Text("Picker")
+
+                                HStack {
+                                    Text("Picker Style:")
+                                    Picker(
+                                        of: BuiltInPickerStyle.supportedOptions,
+                                        selection: $pickerStyle
+                                    )
+                                }
+
                                 HStack {
                                     Text("Flavor: ")
+
                                     Picker(
                                         of: ["Vanilla", "Chocolate", "Strawberry"],
                                         selection: $flavor
+                                    )
+                                    .existentialPickerStyle(
+                                        pickerStyle?.asPickerStyle ?? AutomaticPickerStyle()
                                     )
                                 }
                                 Text("You chose: \(flavor ?? "Nothing yet!")")

@@ -217,11 +217,7 @@ final class UIButtonPicker: WrapperWidget<UIButton>, Picker {
     }
 
     func setChangeHandler(to onChange: @escaping (Int?) -> Void) {
-        onSelect = { [unowned self] in
-            selectedIndex = $0
-            onChange($0)
-            updateMenu()
-        }
+        onSelect = onChange
     }
 
     func setSelectedOption(to index: Int?) {
@@ -233,8 +229,11 @@ final class UIButtonPicker: WrapperWidget<UIButton>, Picker {
         child.menu = UIMenu(
             children: options.enumerated().map { offset, element in
                 UIAction(title: element, state: offset == selectedIndex ? .on : .off) {
-                    [unowned self] (action) in
-                    onSelect?(action.state.isOn ? nil : offset)
+                    [unowned self] _ in
+
+                    selectedIndex = $0
+                    onSelect?(offset)
+                    updateMenu()
                 }
             }
         )

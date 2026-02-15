@@ -20,7 +20,11 @@ public struct Picker<Value: Equatable>: View {
     public var body: some View {
         AnyView(
             environment.pickerStyle.makeView(
-                options: options, selection: value, environment: environment))
+                options: options,
+                selection: value,
+                environment: environment
+            )
+        )
     }
 }
 
@@ -48,36 +52,69 @@ extension PickerStyle {
     }
 }
 
-public struct _PickerImplementation: ElementaryView {
+public struct _PickerImplementation: TypeSafeView {
+    public var body: EmptyView { return EmptyView() }
+
     var style: BackendPickerStyle
     var options: [String]
     var selectedIndex: Binding<Int?>
 
-    func asWidget<Backend: AppBackend>(backend: Backend) -> Backend.Widget {
-        return backend.createPicker(style: style)
+    func children<Backend: AppBackend>(
+        backend: Backend,
+        snapshots: [ViewGraphSnapshotter.NodeSnapshot]?,
+        environment: EnvironmentValues
+    ) -> PickerChildren {
+        PickerChildren(
+            container: AnyWidget(backend.createContainer()),
+            picker: nil,
+            style: style
+        )
+    }
+
+    func asWidget<Backend: AppBackend>(_ children: PickerChildren, backend: Backend)
+        -> Backend.Widget
+    {
+        children.container.widget as! Backend.Widget
     }
 
     func computeLayout<Backend: AppBackend>(
         _ widget: Backend.Widget,
+        children: PickerChildren,
         proposedSize: ProposedViewSize,
         environment: EnvironmentValues,
         backend: Backend
     ) -> ViewLayoutResult {
+        var pickerWidget: Backend.Widget
+
+        if let picker = children.picker, children.style == self.style {
+            pickerWidget = picker.widget as! Backend.Widget
+        } else {
+            let containerWidget = children.container.widget as! Backend.Widget
+            backend.removeAllChildren(of: containerWidget)
+
+            pickerWidget = backend.createPicker(style: style)
+            children.style = self.style
+            children.picker = AnyWidget(pickerWidget)
+
+            backend.insert(pickerWidget, into: containerWidget, at: 0)
+            backend.setPosition(ofChildAt: 0, in: containerWidget, to: .zero)
+        }
+
         // TODO: Implement picker sizing within SwiftCrossUI so that we can
         //   properly separate committing logic out into `commit`.
         backend.updatePicker(
-            widget,
+            pickerWidget,
             options: options,
             environment: environment
         ) {
             selectedIndex.wrappedValue = $0
         }
-        backend.setSelectedOption(ofPicker: widget, to: selectedIndex.wrappedValue)
+        backend.setSelectedOption(ofPicker: pickerWidget, to: selectedIndex.wrappedValue)
 
         // Special handling for UIKitBackend:
         // When backed by a UITableView, its natural size is -1 x -1,
         // but it can and should be as large as reasonable
-        let naturalSize = backend.naturalSize(of: widget)
+        let naturalSize = backend.naturalSize(of: pickerWidget)
         let size: ViewSize
         if naturalSize == SIMD2(-1, -1) {
             size = proposedSize.replacingUnspecifiedDimensions(by: ViewSize(10, 10))
@@ -89,140 +126,40 @@ public struct _PickerImplementation: ElementaryView {
 
     func commit<Backend: AppBackend>(
         _ widget: Backend.Widget,
+        children: PickerChildren,
         layout: ViewLayoutResult,
         environment: EnvironmentValues,
         backend: Backend
     ) {
         backend.setSize(of: widget, to: layout.size.vector)
+        backend.setSize(of: children.picker!.widget as! Backend.Widget, to: layout.size.vector)
     }
 }
 
-public struct MenuPickerStyle: PickerStyle {
-    public nonisolated init() {}
+final class PickerChildren: ViewGraphNodeChildren {
+    var container: AnyWidget
+    var picker: AnyWidget?
+    var style: BackendPickerStyle
 
-    public func makeView<Value: Equatable>(
-        options: [Value],
-        selection: Binding<Value?>,
-        environment _: EnvironmentValues
-    ) -> _PickerImplementation {
-        .init(
-            style: .menu,
-            options: options.map { "\($0)" },
-            selectedIndex: Binding {
-                selection.wrappedValue.flatMap(options.firstIndex(of:))
-            } set: {
-                selection.wrappedValue = $0.map { options[$0] }
-            }
-        )
+    init(container: AnyWidget, picker: AnyWidget? = nil, style: BackendPickerStyle) {
+        self.container = container
+        self.picker = picker
+        self.style = style
     }
 
-    public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        backendType.supportedPickerStyles.contains(.menu)
-    }
+    var widgets: [AnyWidget] { [container] }
+    var erasedNodes: [ErasedViewGraphNode] { [] }
 }
 
-public struct WheelPickerStyle: PickerStyle {
-    public nonisolated init() {}
-
-    public func makeView<Value: Equatable>(
-        options: [Value],
-        selection: Binding<Value?>,
-        environment _: EnvironmentValues
-    ) -> _PickerImplementation {
-        .init(
-            style: .wheel,
-            options: options.map { "\($0)" },
-            selectedIndex: Binding {
-                selection.wrappedValue.flatMap(options.firstIndex(of:))
-            } set: {
-                selection.wrappedValue = $0.map { options[$0] }
-            }
-        )
-    }
-
-    public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        backendType.supportedPickerStyles.contains(.wheel)
-    }
+public protocol _BuiltinPickerStyle {
+    @MainActor
+    func _asBackendPickerStyle<Backend: AppBackend>(_ backendType: Backend.Type)
+        -> BackendPickerStyle
 }
 
-public struct SegmentedPickerStyle: PickerStyle {
-    public nonisolated init() {}
-
-    public func makeView<Value: Equatable>(
-        options: [Value],
-        selection: Binding<Value?>,
-        environment _: EnvironmentValues
-    ) -> _PickerImplementation {
-        .init(
-            style: .segmented,
-            options: options.map { "\($0)" },
-            selectedIndex: Binding {
-                selection.wrappedValue.flatMap(options.firstIndex(of:))
-            } set: {
-                selection.wrappedValue = $0.map { options[$0] }
-            }
-        )
-    }
-
-    public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        backendType.supportedPickerStyles.contains(.segmented)
-    }
-}
-
-public struct RadioGroupPickerStyle: PickerStyle {
-    public nonisolated init() {}
-
-    public func makeView<Value: Equatable>(
-        options: [Value],
-        selection: Binding<Value?>,
-        environment _: EnvironmentValues
-    ) -> _PickerImplementation {
-        .init(
-            style: .radioGroup,
-            options: options.map { "\($0)" },
-            selectedIndex: Binding {
-                selection.wrappedValue.flatMap(options.firstIndex(of:))
-            } set: {
-                selection.wrappedValue = $0.map { options[$0] }
-            }
-        )
-    }
-
-    public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        backendType.supportedPickerStyles.contains(.radioGroup)
-    }
-}
-
-public struct AutomaticPickerStyle: PickerStyle {
-    public nonisolated init() {}
-
-    public func makeView<Value: Equatable>(
-        options: [Value],
-        selection: Binding<Value?>,
-        environment: EnvironmentValues
-    ) -> _PickerImplementation {
-        .init(
-            style: type(of: environment.backend).defaultPickerStyle,
-            options: options.map { "\($0)" },
-            selectedIndex: Binding {
-                selection.wrappedValue.flatMap(options.firstIndex(of:))
-            } set: {
-                selection.wrappedValue = $0.map { options[$0] }
-            }
-        )
-    }
-
-    public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        !backendType.supportedPickerStyles.isEmpty
-    }
-}
-
-public struct InlinePickerStyle: PickerStyle {
-    public nonisolated init() {}
-
-    private func getStyle<Backend: AppBackend>(_: Backend) -> BackendPickerStyle {
-        [BackendPickerStyle.radioGroup, BackendPickerStyle.wheel, BackendPickerStyle.segmented]
-            .first(where: Backend.supportedPickerStyles.contains(_:))!
+extension PickerStyle where Self: _BuiltinPickerStyle {
+    private func asBackendPickerStyle<Backend: AppBackend>(backend: Backend) -> BackendPickerStyle {
+        _asBackendPickerStyle(Backend.self)
     }
 
     public func makeView<Value: Equatable>(
@@ -231,7 +168,7 @@ public struct InlinePickerStyle: PickerStyle {
         environment: EnvironmentValues
     ) -> _PickerImplementation {
         .init(
-            style: getStyle(environment.backend),
+            style: self.asBackendPickerStyle(backend: environment.backend),
             options: options.map { "\($0)" },
             selectedIndex: Binding {
                 selection.wrappedValue.flatMap(options.firstIndex(of:))
@@ -242,7 +179,76 @@ public struct InlinePickerStyle: PickerStyle {
     }
 
     public func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool {
-        backendType.supportedPickerStyles.contains(where: { $0 != .menu })
+        backendType.supportedPickerStyles.contains(_asBackendPickerStyle(backendType))
+    }
+}
+
+public struct MenuPickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        .menu
+    }
+}
+
+public struct WheelPickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        .wheel
+    }
+}
+
+public struct SegmentedPickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        .segmented
+    }
+}
+
+public struct RadioGroupPickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        .radioGroup
+    }
+}
+
+public struct AutomaticPickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        backendType.defaultPickerStyle
+    }
+}
+
+public struct InlinePickerStyle: PickerStyle, _BuiltinPickerStyle {
+    public nonisolated init() {}
+
+    public func _asBackendPickerStyle<Backend: AppBackend>(
+        _ backendType: Backend.Type
+    ) -> BackendPickerStyle {
+        // If the backend only supports .menu, or doesn't support pickers at all, then inline
+        // pickers aren't supported regardless -- so it doesn't matter which of the three is
+        // returned in that case.
+        if backendType.supportedPickerStyles.contains(.radioGroup) {
+            .radioGroup
+        } else if backendType.supportedPickerStyles.contains(.wheel) {
+            .wheel
+        } else {
+            .segmented
+        }
     }
 }
 
