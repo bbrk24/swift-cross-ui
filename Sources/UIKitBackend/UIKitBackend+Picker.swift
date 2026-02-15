@@ -293,7 +293,7 @@ extension UIKitBackend {
                         UIPickerViewPicker()
                     }
                 #elseif os(tvOS)
-                    UITableViewPicker()
+                    preconditionFailure("wheel is unsupported on tvOS")
                 #else
                     UIPickerViewPicker()
                 #endif
