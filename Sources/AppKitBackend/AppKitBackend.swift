@@ -2538,7 +2538,7 @@ final class RadioGroup: NSStackView {
 
     override var intrinsicContentSize: NSSize {
         buttons.reduce(
-            into: NSSize(width: 0.0, height: spacing * Double(buttons.count - 1))
+            into: NSSize(width: 0.0, height: max(0.0, spacing * Double(buttons.count - 1)))
         ) { partialResult, button in
             let buttonIntrinsicSize = button.intrinsicContentSize
             partialResult.width = max(partialResult.width, buttonIntrinsicSize.width)
