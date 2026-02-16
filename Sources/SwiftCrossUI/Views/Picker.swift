@@ -28,16 +28,28 @@ public struct Picker<Value: Equatable>: View {
     }
 }
 
+/// A type that specifies the appearance and interaction of all pickers within a view hierarchy.
 @MainActor
 public protocol PickerStyle {
     associatedtype Body: View
 
+    /// The method used to render ``Picker``.
+    /// - Parameters:
+    ///   - options: The `options` passed to the picker.
+    ///   - selection: A binding to the picker's currently selected value. May hold nil if no value
+    ///     has been chosen.
+    ///   - environment: The environment the picker is being rendered in.
     func makeView<Value: Equatable>(
         options: [Value],
         selection: Binding<Value?>,
         environment: EnvironmentValues
     ) -> Body
 
+    /// A method that can be used to check whether a picker style is currently supported.
+    ///
+    /// The default implementation always returns `true`.
+    /// - Parameter backendType: The type of the backend to query for support. This can usually
+    ///   be `DefaultBackend.self`.
     func isSupported<Backend: AppBackend>(_ backendType: Backend.Type) -> Bool
 }
 
@@ -253,26 +265,36 @@ public struct InlinePickerStyle: PickerStyle, _BuiltinPickerStyle {
 }
 
 extension PickerStyle where Self == RadioGroupPickerStyle {
+    /// A picker style that presents the options as a group of radio buttons.
     public static nonisolated var radioGroup: Self { .init() }
 }
 
 extension PickerStyle where Self == MenuPickerStyle {
+    /// A picker style that presents the options in a drop-down menu.
     public static nonisolated var menu: Self { .init() }
 }
 
 extension PickerStyle where Self == WheelPickerStyle {
+    /// A picker style that presents the options in a scrollable wheel.
     public static nonisolated var wheel: Self { .init() }
 }
 
 extension PickerStyle where Self == SegmentedPickerStyle {
+    /// A picker style that presents the options in a horizontal segmented control.
     public static nonisolated var segmented: Self { .init() }
+    /// An alias for ``segmented``, provided for SwiftUI compatibility.
     public static nonisolated var palette: Self { .init() }
 }
 
 extension PickerStyle where Self == AutomaticPickerStyle {
+    /// The default picker style that adapts to the current platform and context.
     public static nonisolated var automatic: Self { .init() }
 }
 
 extension PickerStyle where Self == InlinePickerStyle {
+    /// A picker style that shows all options in the picker's content.
+    ///
+    /// This may be any built-in style other than ``menu``, and adapts to the current platform and
+    /// context.
     public static nonisolated var inline: Self { .init() }
 }
