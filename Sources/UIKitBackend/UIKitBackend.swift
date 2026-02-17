@@ -60,7 +60,7 @@ public final class UIKitBackend: AppBackend {
         #endif
     }
 
-    public static var defaultPickerStyle: BackendPickerStyle {
+    public var defaultPickerStyle: BackendPickerStyle {
         #if os(tvOS)
             .segmented
         #elseif os(visionOS)
@@ -70,7 +70,7 @@ public final class UIKitBackend: AppBackend {
         #endif
     }
 
-    public nonisolated static var supportedPickerStyles: [BackendPickerStyle] {
+    public var supportedPickerStyles: [BackendPickerStyle] {
         #if os(tvOS)
             if #available(tvOS 17, *) {
                 [.menu, .segmented]

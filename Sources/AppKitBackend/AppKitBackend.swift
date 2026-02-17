@@ -28,7 +28,7 @@ public final class AppKitBackend: AppBackend {
     public let supportsMultipleWindows = true
     public let deviceClass = DeviceClass.desktop
     public let supportedDatePickerStyles: [DatePickerStyle] = [.automatic, .graphical, .compact]
-    public static let supportedPickerStyles: [BackendPickerStyle] = [
+    public let supportedPickerStyles: [BackendPickerStyle] = [
         .menu, .segmented, .radioGroup,
     ]
 

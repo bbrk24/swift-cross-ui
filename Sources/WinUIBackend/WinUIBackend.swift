@@ -71,7 +71,7 @@ public final class WinUIBackend: AppBackend {
     public let supportedDatePickerStyles: [DatePickerStyle] = [
         .automatic, .graphical, .compact, .wheel,
     ]
-    public static let supportedPickerStyles: [BackendPickerStyle] = [.menu, .radioGroup]
+    public let supportedPickerStyles: [BackendPickerStyle] = [.menu, .radioGroup]
 
     public var scrollBarWidth: Int {
         12

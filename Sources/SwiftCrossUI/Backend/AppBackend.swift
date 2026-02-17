@@ -106,9 +106,9 @@ public protocol AppBackend: Sendable {
     nonisolated var supportedDatePickerStyles: [DatePickerStyle] { get }
 
     /// The supported picker styles.
-    nonisolated static var supportedPickerStyles: [BackendPickerStyle] { get }
+    var supportedPickerStyles: [BackendPickerStyle] { get }
     /// The picker style used by `automatic`.
-    nonisolated static var defaultPickerStyle: BackendPickerStyle { get }
+    var defaultPickerStyle: BackendPickerStyle { get }
 
     /// Often in UI frameworks (such as Gtk), code is run in a callback
     /// after starting the app, and hence this generic root window creation
@@ -885,7 +885,7 @@ public protocol AppBackend: Sendable {
 }
 
 extension AppBackend {
-    public nonisolated static var defaultPickerStyle: BackendPickerStyle {
+    public var defaultPickerStyle: BackendPickerStyle {
         supportedPickerStyles.first ?? .menu
     }
 

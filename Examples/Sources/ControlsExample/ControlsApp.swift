@@ -19,16 +19,6 @@ enum BuiltInPickerStyle: CaseIterable, Equatable {
             case .wheel: .wheel
         }
     }
-
-    @MainActor
-    var isSupported: Bool {
-        asPickerStyle.isSupported(DefaultBackend.self)
-    }
-
-    @MainActor
-    static var supportedOptions: [BuiltInPickerStyle] {
-        allCases.filter(\.isSupported)
-    }
 }
 
 extension View {
@@ -53,9 +43,10 @@ struct ControlsApp: App {
     @State var menuToggleState = false
     @State var progressViewSize: Int = 10
     @State var isProgressViewResizable = true
-    @State var pickerStyle: BuiltInPickerStyle? = BuiltInPickerStyle.supportedOptions.first
+    @State var pickerStyle: BuiltInPickerStyle? = .automatic
 
     @Environment(\.supportedDatePickerStyles) var supportedDatePickerStyles
+    @Environment(\.isPickerStyleSupported) var isPickerStyleSupported
 
     var body: some Scene {
         WindowGroup("ControlsApp") {
@@ -143,7 +134,9 @@ struct ControlsApp: App {
                                 HStack {
                                     Text("Picker Style:")
                                     Picker(
-                                        of: BuiltInPickerStyle.supportedOptions,
+                                        of: BuiltInPickerStyle.allCases.filter {
+                                            isPickerStyleSupported($0.asPickerStyle)
+                                        },
                                         selection: $pickerStyle
                                     )
                                 }
