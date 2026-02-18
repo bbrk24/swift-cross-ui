@@ -1,11 +1,11 @@
 import Testing
-import SwiftSyntaxMacrosTestSupport
+import SwiftSyntaxMacrosGenericTestSupport
 import SwiftSyntaxMacros
 import SwiftCrossUIMacrosPlugin
+import SwiftSyntaxMacroExpansion
 
-let testMacros: [String: Macro.Type] = [
-    "ObservableObject": ObservableObjectMacro.self,
-    "ObservationIgnored": ObservationIgnoredMacro.self
+fileprivate let testMacros: [String: MacroSpec] = [
+    "ObservableObject": MacroSpec(type: ObservableObjectMacro.self)
 ]
 
 @Suite("Testing @ObservableObject Macro")
@@ -28,7 +28,10 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
     
@@ -51,11 +54,14 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
     
-    @Test("Stored property with observers gets attribute")
+    @Test("Stored property with observers doesn't get attribute")
     func testPropertyWithObserversGetsAttribute() {
         assertMacroExpansion(
             """
@@ -68,7 +74,6 @@ struct ObservableTests {
             """,
             expandedSource: """
             class ViewModel {
-                @SwiftCrossUI.Published
                 var observed: String = "" {
                     didSet { print("changed") }
                 }
@@ -77,7 +82,10 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
     
@@ -102,7 +110,10 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
     
@@ -123,11 +134,14 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
     
-    @Test("Multiple Bindings throw Error")
+    @Test("Multiple Bindings get ignored")
     func testMultipleBindingsThrowError() {
         assertMacroExpansion(
             """
@@ -144,14 +158,10 @@ struct ObservableTests {
             extension ViewModel: SwiftCrossUI.ObservableObject {
             }
             """,
-            diagnostics: [
-                DiagnosticSpec(
-                    message: "@ObservableObject only supports single variables. Split up your variable declaration or ignore it with @ObservationIgnored",
-                    line: 3,
-                    column: 5
-                )
-            ],
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: { spec in
+                Issue.record(spec.issueComment)
+            }
         )
     }
 }

@@ -300,17 +300,8 @@ final class KeyboardToolbar: UIToolbar {
 
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
-enum ToolbarKey: EnvironmentKey {
-    static let defaultValue: ((KeyboardToolbar, EnvironmentValues) -> Void)? = nil
-}
-
-@available(tvOS, unavailable)
-@available(visionOS, unavailable)
 extension EnvironmentValues {
-    var updateToolbar: ((KeyboardToolbar, EnvironmentValues) -> Void)? {
-        get { self[ToolbarKey.self] }
-        set { self[ToolbarKey.self] = newValue }
-    }
+    @Entry var updateToolbar: ((KeyboardToolbar, EnvironmentValues) -> Void)?
 }
 
 extension View {

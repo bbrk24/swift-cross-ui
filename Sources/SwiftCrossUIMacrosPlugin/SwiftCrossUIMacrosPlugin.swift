@@ -8,5 +8,6 @@ struct SwiftCrossUIMacrosPlugin: CompilerPlugin {
         ObservationIgnoredMacro.self,
         HotReloadableAppMacro.self,
         HotReloadableExprMacro.self,
+        EntryMacro.self,
     ]
 }

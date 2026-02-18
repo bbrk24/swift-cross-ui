@@ -62,14 +62,7 @@ struct LatestGreetingDisplay: View {
     }
 }
 
-struct LatestGreetingKey: EnvironmentKey {
-    typealias Value = String?
-    static let defaultValue: Value = nil
-}
-
 extension EnvironmentValues {
-    var latestGreeting: String? {
-        get { self[LatestGreetingKey.self] }
-        set { self[LatestGreetingKey.self] = newValue }
-    }
+    @Entry
+    var latestGreeting: String? = nil
 }

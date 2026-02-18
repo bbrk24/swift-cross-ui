@@ -24,7 +24,7 @@ enum BuiltInPickerStyle: CaseIterable, Equatable {
 @main
 @HotReloadable
 struct ControlsApp: App {
-    @AppStorage("count") var count = 0
+    @AppStorage(\.count) var count
     @State var exampleButtonState = false
     @State var exampleSwitchState = false
     @State var exampleCheckboxState = false
@@ -178,4 +178,8 @@ struct ControlsApp: App {
             }
         }.defaultSize(width: 400, height: 600)
     }
+}
+
+extension AppStorageValues {
+    @Entry var count: Int = 0
 }
