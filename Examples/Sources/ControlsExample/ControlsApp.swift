@@ -149,7 +149,7 @@ struct ControlsApp: App {
                                         selection: $flavor
                                     )
                                     .existentialPickerStyle(
-                                        pickerStyle?.asPickerStyle ?? AutomaticPickerStyle()
+                                        pickerStyle?.asPickerStyle ?? DefaultPickerStyle()
                                     )
                                 }
                                 Text("You chose: \(flavor ?? "Nothing yet!")")

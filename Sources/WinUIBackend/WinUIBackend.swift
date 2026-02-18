@@ -939,9 +939,17 @@ public final class WinUIBackend: AppBackend {
 
                 return picker
             case .radioGroup:
-                return RadioButtons()
+                let picker = CustomRadioButtons()
+                
+                picker.selectionChanged.addHandler { [weak picker] _, _ in
+                    guard let picker else { return }
+                    picker.onChangeSelection?(picker.selectedIndex == -1 ? nil : Int(picker.selectedIndex))
+                }
+
+                return picker
             default:
-                fatalError("unsupported picker style")
+                logger.critical("unsupported picker style \(style)")
+                fatalError("unsupported picker style \(style)")
         }
     }
 
@@ -997,9 +1005,9 @@ public final class WinUIBackend: AppBackend {
             // TODO: Picker font handling
 
             picker.options = options
-        } else if let picker = picker as? RadioButtons {
+        } else if let picker = picker as? CustomRadioButtons {
             for i in 0..<min(picker.items.count, options.count) {
-                picker.items[i] = options[i]
+                (picker.items[i] as! TextBlock).text = options[i]
             }
 
             if picker.items.count > options.count {
@@ -1008,14 +1016,14 @@ public final class WinUIBackend: AppBackend {
                 }
             } else {
                 for option in options[picker.items.count...] {
-                    picker.items.append(option)
+                    let block = TextBlock()
+                    block.text = option
+                    environment.apply(to: block)
+                    picker.items.append(block)
                 }
             }
 
-            picker.selectionChanged.addHandler { [weak picker] _, _ in
-                guard let picker else { return }
-                onChange(picker.selectedIndex == -1 ? nil : Int(picker.selectedIndex))
-            }
+            picker.onChangeSelection = onChange
         }
     }
 
@@ -2025,6 +2033,10 @@ final class CustomComboBox: ComboBox {
     var options: [String] = []
     var onChangeSelection: ((Int?) -> Void)?
     var actualForegroundColor: UWP.Color = UWP.Color(a: 255, r: 0, g: 0, b: 0)
+}
+
+final class CustomRadioButtons: RadioButtons {
+    var onChangeSelection: ((Int?) -> Void)?
 }
 
 final class CustomSplitView: SplitView {
