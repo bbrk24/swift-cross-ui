@@ -1,5 +1,5 @@
 extension View {
-    public func pickerStyle<S: PickerStyle>(_ style: S) -> some View {
+    public func pickerStyle(_ style: any PickerStyle) -> some View {
         EnvironmentModifier(self) { environment in
             if !style.isSupported(backend: environment.backend) {
                 assertionFailure(

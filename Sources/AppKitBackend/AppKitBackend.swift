@@ -794,10 +794,15 @@ public final class AppKitBackend: AppBackend {
 
     public func createPicker(style: BackendPickerStyle) -> Widget {
         switch style {
-            case .menu: NSPopUpButton()
-            case .segmented: NSSegmentedControl()
-            case .radioGroup: RadioGroup()
-            default: preconditionFailure("unsupported picker type")
+            case .menu:
+                return NSPopUpButton()
+            case .segmented:
+                return NSSegmentedControl()
+            case .radioGroup:
+                return RadioGroup()
+            default:
+                logger.critical("unsupported picker style \(style)")
+                fatalError("unsupported picker style \(style)")
         }
     }
 

@@ -21,12 +21,6 @@ enum BuiltInPickerStyle: CaseIterable, Equatable {
     }
 }
 
-extension View {
-    func existentialPickerStyle(_ style: any PickerStyle) -> some View {
-        AnyView(pickerStyle(style))
-    }
-}
-
 @main
 @HotReloadable
 struct ControlsApp: App {
@@ -148,7 +142,7 @@ struct ControlsApp: App {
                                         of: ["Vanilla", "Chocolate", "Strawberry"],
                                         selection: $flavor
                                     )
-                                    .existentialPickerStyle(
+                                    .pickerStyle(
                                         pickerStyle?.asPickerStyle ?? DefaultPickerStyle()
                                     )
                                 }

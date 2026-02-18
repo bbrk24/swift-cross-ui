@@ -940,10 +940,12 @@ public final class WinUIBackend: AppBackend {
                 return picker
             case .radioGroup:
                 let picker = CustomRadioButtons()
-                
+
                 picker.selectionChanged.addHandler { [weak picker] _, _ in
                     guard let picker else { return }
-                    picker.onChangeSelection?(picker.selectedIndex == -1 ? nil : Int(picker.selectedIndex))
+                    picker.onChangeSelection?(
+                        picker.selectedIndex == -1 ? nil : Int(picker.selectedIndex)
+                    )
                 }
 
                 return picker
