@@ -21,6 +21,7 @@ public final class GtkBackend: AppBackend {
         var onDismiss: (() -> Void)? = nil
         var interactiveDismissDisabled = false
         var nestedSheet: Sheet?
+        var titleWidget = Box(orientation: .horizontal)
     }
 
     public final class Path {
@@ -1787,6 +1788,7 @@ public final class GtkBackend: AppBackend {
         let parent = parentSheet ?? window
         sheet.isModal = true
         sheet.isDecorated = false
+        gtk_window_set_titlebar(sheet.gobjectPointer.cast(), sheet.titleWidget.widgetPointer)
         sheet.destroyWithParent = true
         if let parentSheet {
             parentSheet.nestedSheet = sheet
