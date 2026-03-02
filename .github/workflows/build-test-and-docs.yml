@@ -37,6 +37,9 @@ jobs:
         upload: true
         working-directory: ./Examples
 
+    - name: Test
+      run: SCUI_TEST_GTK3BACKEND=1 ./Scripts/test.sh
+
     - name: Build other targets and examples
       run: |
         swift build --target GtkCodeGen && \
@@ -59,9 +62,6 @@ jobs:
         swift build --target PathsExample && \
         swift build --target WebViewExample && \
         swift build --target AdvancedCustomizationExample
-
-    - name: Test
-      run: swift test --test-product swift-cross-uiPackageTests
 
   uikit:
     runs-on: macos-15
@@ -306,6 +306,9 @@ jobs:
       run: swift build --target Gtk3Backend
       working-directory: ./Examples
 
+    - name: Test
+      run: SCUI_TEST_GTK3BACKEND=1 ./Scripts/test.sh
+
     - name: Build examples
       working-directory: ./Examples
       run: |
@@ -324,9 +327,6 @@ jobs:
         swift build --target NotesExample && \
         swift build --target PathsExample && \
         swift build --target AdvancedCustomizationExample
-
-    - name: Test
-      run: swift test --test-product swift-cross-uiPackageTests
 
   update-docs:
     runs-on: macos-15

@@ -10,6 +10,8 @@
 
 Due to limitations of Swift Package Manager and the way this project is structured, running tests is a little more annoying than just running `swift test`. Luckily, there's a handy [test.sh](Scripts/test.sh) script which performs the required workaround. To run the tests, just run `./Scripts/test.sh` in the root of the repository.
 
+The project has some Gtk3Backend-specific tests which are disabled by default given that many contributors don't have Gtk 3 installed. We recommend running these tests if you are working on the layout system or Gtk3Backend. The command to run them (along with all of the default tests) is `SCUI_TEST_GTK3BACKEND=1 ./Scripts/test.sh`. CI will always run these tests, so that you don't have to worry about missing these tests locally.
+
 ## How to do something useful
 
 1. Look through [the issues on GitHub](https://github.com/moreSwift/swift-cross-ui/issues) and
