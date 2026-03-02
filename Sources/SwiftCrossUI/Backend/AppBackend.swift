@@ -293,10 +293,20 @@ public protocol AppBackend: Sendable {
     /// the file's enclosing directory and highlighting the file.
     func revealFile(_ url: URL) throws
 
-    /// Shows a widget after it has been created or updated (may be unnecessary
-    /// for some backends). Predominantly used by ``ViewGraphNode`` after
-    /// propagating updates.
+    /// Shows a widget after it has been created (may be unnecessary
+    /// for some backends).
+    ///
+    /// Only called once the widget has been added to the widget hierarchy.
     func show(widget: Widget)
+    /// Show a widget after it has been updated. This is unnecessary for most
+    /// backends which automatically update the visual appearance of widgets
+    /// when their properties get changed.
+    ///
+    /// The default implementation does nothing.
+    ///
+    /// It's a guarantee that ``ViewGraphNode/show(widget:)`` will get called
+    /// before this method for any given widget.
+    func showUpdate(of widget: Widget)
     /// Adds a short tag to a widget to assist during debugging if the backend supports
     /// such a feature. Some backends may only apply tags under particular conditions
     /// such as when being built in debug mode.
@@ -917,6 +927,12 @@ extension AppBackend {
     public func tag(widget: Widget, as tag: String) {
         // This is only really to assist contributors when debugging backends,
         // so it's safe enough to have a no-op default implementation.
+    }
+
+    public func showUpdate(of widget: Widget) {
+        // This only exists for backends such as CursesBackend that need to
+        // explicitly be notified that a widget should display queued changes.
+        // Most can get away with this empty default implementation.
     }
 }
 
