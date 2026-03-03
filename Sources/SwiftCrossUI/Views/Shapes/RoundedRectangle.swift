@@ -453,3 +453,42 @@ extension RoundedRectangle: Shape {
             .addLine(to: SIMD2(x: bounds.center.x, y: bounds.y))
     }
 }
+
+// MARK: InsettableShape
+extension RoundedRectangle: InsettableShape {
+    public func inset(by amount: Double) -> InsetShape {
+        InsetShape(initialCornerRadius: cornerRadius, insetAmount: amount)
+    }
+
+    public struct InsetShape {
+        var initialCornerRadius: Double
+        var insetAmount: Double
+    }
+}
+
+extension RoundedRectangle.InsetShape: InsettableShape {
+    private var actualCornerRadius: Double { max(0, initialCornerRadius - insetAmount) }
+
+    public func path(in bounds: Path.Rect) -> Path {
+        RoundedRectangle(cornerRadius: actualCornerRadius)
+            .path(
+                in: .init(
+                    x: bounds.x + insetAmount,
+                    y: bounds.y + insetAmount,
+                    width: bounds.width - 2 * insetAmount,
+                    height: bounds.height - 2 * insetAmount
+                )
+            )
+    }
+
+    public func size(fitting proposal: ProposedViewSize) -> ViewSize {
+        let proposedWidth = proposal.width ?? 10
+        let proposedHeight = proposal.height ?? 10
+
+        return ViewSize(max(proposedWidth, insetAmount * 2), max(proposedHeight, insetAmount * 2))
+    }
+
+    public func inset(by amount: Double) -> RoundedRectangle.InsetShape {
+        .init(initialCornerRadius: initialCornerRadius, insetAmount: insetAmount + amount)
+    }
+}

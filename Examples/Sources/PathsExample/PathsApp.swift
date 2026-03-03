@@ -64,6 +64,8 @@ struct PathsApp: App {
             HStack {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
+                        .inset(by: 2)
+                        .stroke(.red, style: .init(width: 4))
                         .fill(.gray)
 
                     HStack {

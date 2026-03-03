@@ -1,5 +1,5 @@
 /// An ellipse.
-public struct Ellipse: Shape {
+public struct Ellipse: InsettableShape {
     /// Creates an ``Ellipse`` instance.
     public nonisolated init() {}
 
@@ -17,5 +17,9 @@ public struct Ellipse: Shape {
                     translation: bounds.center
                 )
             )
+    }
+
+    public nonisolated func inset(by amount: Double) -> some InsettableShape {
+        InsettableShapeImpl(inset: amount, base: self)
     }
 }
