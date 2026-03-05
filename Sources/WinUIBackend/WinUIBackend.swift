@@ -667,24 +667,30 @@ public final class WinUIBackend: AppBackend {
         environment: EnvironmentValues
     ) -> SIMD2<Int> {
         // Update the text view's environment and measure its desired line height
-        updateTextView(measurementTextBlock, content: "a", environment: environment)
-        let lineHeight = Self.measure(
-            measurementTextBlock,
-            proposedWidth: nil,
-            proposedHeight: nil
-        ).y
+        updateTextView(measurementTextBlock, content: text, environment: environment)
 
         // Measure the text's size
-        measurementTextBlock.text = text
         var size = Self.measure(
             measurementTextBlock,
             proposedWidth: proposedWidth,
             proposedHeight: proposedHeight
         )
 
+        var usedHeight = size.y
+        let lineHeight = environment.resolvedFont.lineHeight
+
+        if let lineLimitSettings = environment.lineLimitSettings {
+            let height = Int(
+                Double(max(lineLimitSettings.limit, 1)) * lineHeight)
+
+            if height < usedHeight || lineLimitSettings.reservesSpace {
+                usedHeight = height
+            }
+        }
+
         // Make sure the text doesn't get shorter than a single line of text even if
         // it's empty.
-        size.y = max(size.y, lineHeight)
+        size.y = max(usedHeight, Int(lineHeight))
         return size
     }
 
@@ -710,6 +716,7 @@ public final class WinUIBackend: AppBackend {
         let textBlock = TextBlock()
         textBlock.textWrapping = .wrap
         textBlock.textTrimming = .characterEllipsis
+        textBlock.lineStackingStrategy = .blockLineHeight
         return textBlock
     }
 
@@ -2016,6 +2023,8 @@ extension EnvironmentValues {
         textBlock.fontSize = resolvedFont.pointSize
         textBlock.fontWeight.weight = resolvedFont.winUIFontWeight
         textBlock.foreground = winUIForegroundBrush
+        textBlock.lineHeight = resolvedFont.lineHeight
+
         if resolvedFont.isItalic {
             textBlock.fontStyle = .italic
         }

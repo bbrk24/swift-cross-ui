@@ -496,9 +496,21 @@ public final class AppKitBackend: AppBackend {
             options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine],
             attributes: Self.attributes(forTextIn: environment)
         )
+
+        var height = rect.size.height
+
+        if let lineLimitSettings = environment.lineLimitSettings {
+            let limitedHeight =
+                Double(max(lineLimitSettings.limit, 1)) * environment.resolvedFont.lineHeight
+
+            if limitedHeight < height || lineLimitSettings.reservesSpace {
+                height = limitedHeight
+            }
+        }
+
         return SIMD2(
             Int(rect.size.width.rounded(.awayFromZero)),
-            Int(rect.size.height.rounded(.awayFromZero))
+            Int(height.rounded(.awayFromZero))
         )
     }
 

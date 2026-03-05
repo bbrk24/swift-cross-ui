@@ -52,6 +52,8 @@ public final class GtkBackend: AppBackend {
     /// precreated window until it gets 'created' via `createWindow`.
     var windows: [Window] = []
 
+    private var measurementCustomLabel: CustomLabel!
+
     private struct LogLocation: Hashable, Equatable {
         let file: String
         let line: Int
@@ -93,6 +95,7 @@ public final class GtkBackend: AppBackend {
 
     public func runMainLoop(_ callback: @escaping @MainActor () -> Void) {
         gtkApp.run { window in
+            self.measurementCustomLabel = (self.createTextView() as! CustomLabel)
             self.precreatedWindow = window
             callback()
 
@@ -693,6 +696,7 @@ public final class GtkBackend: AppBackend {
         textView.wrap = true
         textView.lineWrapMode = .wordCharacter
         textView.ellipsize = .end
+        textView.yalign = 0.0
         return textView
     }
 
@@ -712,6 +716,7 @@ public final class GtkBackend: AppBackend {
                 case .trailing:
                     Justification.right
             }
+
         textView.selectable = environment.isTextSelectionEnabled
         textView.css.clear()
         textView.css.set(properties: Self.cssProperties(for: environment))
@@ -731,7 +736,33 @@ public final class GtkBackend: AppBackend {
             proposedWidth: proposedWidth.map(Double.init),
             proposedHeight: proposedHeight.map(Double.init)
         )
-        return SIMD2(width, height)
+
+        var imposedHeight = height
+
+        if let lineLimitSettings = environment.lineLimitSettings {
+            let multilineString = [String](repeating: "a", count: lineLimitSettings.limit)
+                .joined(separator: "\n")
+            updateTextView(
+                measurementCustomLabel,
+                content: "",
+                environment: environment
+            )
+
+            let pango = Pango(for: measurementCustomLabel)
+
+            let (_, heightLimit) = pango.getTextSize(
+                multilineString,
+                ellipsize: (widget as! CustomLabel).ellipsize,
+                proposedWidth: nil,
+                proposedHeight: nil
+            )
+
+            if heightLimit < imposedHeight || lineLimitSettings.reservesSpace {
+                imposedHeight = heightLimit
+            }
+        }
+
+        return SIMD2(width, imposedHeight)
     }
 
     public func createImageView() -> Widget {
