@@ -16,25 +16,30 @@ public struct EnvironmentValues {
         )
     }
 
-    /// The current font resolved to a form suitable for rendering. Just a
-    /// helper method for our own backends. We haven't made this public because
-    /// it would be weird to have two pretty equivalent ways of resolving fonts.
+    /// The current font resolved to a form suitable for rendering.
+    ///
+    /// Just a helper method for our own backends. We haven't made this public
+    /// because it would be weird to have two pretty equivalent ways of resolving
+    /// fonts.
     @MainActor
     package var resolvedFont: Font.Resolved {
         font.resolve(in: fontResolutionContext)
     }
 
-    /// The suggested foreground color for backends to use. Backends don't
-    /// neccessarily have to obey this when ``Environment/foregroundColor``
-    /// is `nil`.
+    /// The suggested foreground color for backends to use.
+    ///
+    /// Backends don't neccessarily have to obey this when
+    /// ``EnvironmentValues/foregroundColor`` is `nil`.
     public var suggestedForegroundColor: Color {
         foregroundColor ?? colorScheme.defaultForegroundColor
     }
 
     /// Called by view graph nodes when they resize due to an internal state
-    /// change and end up changing size. Each view graph node sets its own
-    /// handler when passing the environment on to its children, setting up
-    /// a bottom-up update chain up which resize events can propagate.
+    /// change and end up changing size.
+    ///
+    /// Each view graph node sets its own handler when passing the environment
+    /// on to its children, setting up a bottom-up update chain up which resize
+    /// events can propagate.
     var onResize: @MainActor (_ newSize: ViewSize) -> Void
 
     /// The app storage provider to use for `@AppStorage` property wrappers.
@@ -44,17 +49,23 @@ public struct EnvironmentValues {
     private var values: [ObjectIdentifier: Any]
 
     /// An internal environment value used to control whether layout caching is
-    /// enabled or not. This is set to true when computing non-final layouts. E.g.
-    /// when a stack computes the minimum and maximum sizes of its children, it
-    /// should enable layout caching because those updates are guaranteed to be
-    /// non-final. The reason that we can't cache on non-final updates is that
-    /// the last layout proposal received by each view must be its intended final
-    /// proposal.
+    /// enabled or not.
+    ///
+    /// This is set to `true` when computing non-final layouts. E.g. when a stack
+    /// computes the minimum and maximum sizes of its children, it should enable
+    /// layout caching because those updates are guaranteed to be non-final. The
+    /// reason that we can't cache on non-final updates is that the last layout
+    /// proposal received by each view must be its intended final proposal.
     var allowLayoutCaching: Bool = false
 
     /// Backing storage for observable subscript
     private var observableObjects: [ObjectIdentifier: any ObservableObject]
 
+    /// Gets an environment value given an environment key's metatype.
+    ///
+    /// - Parameter key: The type of the key.
+    /// - Returns: The environment value associated with `key`, or the key's
+    ///   default value if it hasn't been set in the environment yet.
     public subscript<T: EnvironmentKey>(_ key: T.Type) -> T.Value {
         get {
             values[ObjectIdentifier(T.self), default: T.defaultValue] as! T.Value
@@ -79,8 +90,10 @@ public struct EnvironmentValues {
         }
     }
 
-    /// Brings the current window forward, not guaranteed to always bring
-    /// the window to the top (due to focus stealing prevention).
+    /// Brings the current window forward.
+    ///
+    /// This is not guaranteed to always bring the window to the top (due
+    /// to focus stealing prevention).
     @MainActor
     func bringWindowForward() {
         func activate<Backend: AppBackend>(with backend: Backend) {
@@ -90,16 +103,21 @@ public struct EnvironmentValues {
         logger.info("window activated")
     }
 
-    /// The backend in use. Mustn't change throughout the app's lifecycle.
+    /// The backend in use.
+    ///
+    /// Mustn't change throughout the app's lifecycle.
     let backend: any AppBackend
 
-    /// Presents an 'Open file' dialog fit for selecting a single file. Some
-    /// backends only allow selecting either files or directories but not both
-    /// in a single dialog. Returns `nil` if the user cancels the operation.
+    /// Presents an 'Open file' dialog fit for selecting a single file.
+    /// 
     /// Displays as a modal for the current window, or the entire app if
     /// accessed outside of a scene's view graph (in which case the backend
     /// can decide whether to make it an app modal, a standalone window, or a
-    /// window of its choosing).
+    /// modal for a window of its choosing).
+    ///
+    /// - Important: GtkBackend, Gtk3Backend, and WinUIBackend will only
+    ///   enable _either_ files or directories for selection, but won't
+    ///   enable both types in a single dialog.
     @MainActor
     @available(tvOS, unavailable, message: "tvOS does not provide file system access")
     public var chooseFile: PresentSingleFileOpenDialogAction {
@@ -110,11 +128,11 @@ public struct EnvironmentValues {
     }
 
     /// Presents a 'Save file' dialog fit for selecting a save destination.
-    /// Returns `nil` if the user cancels the operation. Displays as a modal
-    /// for the current window, or the entire app if accessed outside of a
-    /// scene's view graph (in which case the backend can decide whether to
-    /// make it an app modal, a standalone window, or a modal for a window of
-    /// its chooosing).
+    ///
+    /// Displays as a modal for the current window, or the entire app if
+    /// accessed outside of a scene's view graph (in which case the backend
+    /// can decide whether to make it an app modal, a standalone window, or a
+    /// window of its choosing).
     @MainActor
     public var chooseFileSaveDestination: PresentFileSaveDialogAction {
         PresentFileSaveDialogAction(
@@ -132,9 +150,10 @@ public struct EnvironmentValues {
         PresentAlertAction(environment: self)
     }
 
-    /// Opens a URL with the default application. May present an application
-    /// picker if multiple applications are registered for the given URL
-    /// protocol.
+    /// Opens a URL with the default application.
+    ///
+    /// May present an application picker if multiple applications are registered
+    /// for the given URL protocol.
     @MainActor
     public var openURL: OpenURLAction {
         OpenURLAction(backend: backend)
@@ -155,11 +174,11 @@ public struct EnvironmentValues {
         )
     }
 
-    /// Reveals a file in the system's file manager. This opens
-    /// the file's enclosing directory and highlighting the file.
+    /// Reveals a file in the system's file manager.
     ///
-    /// `nil` on platforms that don't support revealing files, e.g.
-    /// iOS.
+    /// This opens the file's enclosing directory and highlights the file.
+    ///
+    /// `nil` on platforms that don't support revealing files, e.g. iOS.
     @MainActor
     public var revealFile: RevealFileAction? {
         RevealFileAction(backend: backend)
@@ -182,6 +201,10 @@ public struct EnvironmentValues {
     }
 
     /// Creates the default environment.
+    ///
+    /// - Parameters:
+    ///   - backend: The app's backend.
+    ///   - appStorageProvider: The app's app storage provider
     package init<Backend: AppBackend>(
         backend: Backend,
         appStorageProvider: any AppStorageProvider = DefaultAppStorageProvider()
@@ -203,6 +226,12 @@ public struct EnvironmentValues {
 
     /// Returns a copy of the environment with the specified property set to the
     /// provided new value.
+    ///
+    /// - Parameters:
+    ///   - keyPath: A key path to the property to set.
+    ///   - newValue: The new value of the property.
+    /// - Returns: A copy of the environment with the specified property set to
+    ///   `newValue`.
     public func with<T>(_ keyPath: WritableKeyPath<Self, T>, _ newValue: T) -> Self {
         var environment = self
         environment[keyPath: keyPath] = newValue
@@ -211,23 +240,30 @@ public struct EnvironmentValues {
 }
 
 extension EnvironmentValues {
-    /// The current stack orientation. Inherited by ``ForEach`` and ``Group`` so
-    /// that they can be used without affecting layout.
+    /// The current stack orientation.
+    ///
+    /// Inherited by ``ForEach`` and ``Group`` so that they can be used without
+    /// affecting layout.
     @Entry public var layoutOrientation: Orientation = .vertical
 
-    /// The current stack alignment. Inherited by ``ForEach`` and ``Group`` so
-    /// that they can be used without affecting layout.
+    /// The current stack alignment.
+    ///
+    /// Inherited by ``ForEach`` and ``Group`` so that they can be used without
+    /// affecting layout.
     @Entry public var layoutAlignment: StackAlignment = .center
 
-    /// The current stack spacing. Inherited by ``ForEach`` and ``Group`` so
-    /// that they can be used without affecting layout.
+    /// The current stack spacing.
+    ///
+    /// Inherited by ``ForEach`` and ``Group`` so that they can be used without
+    /// affecting layout.
     @Entry public var layoutSpacing: Int = 10
 
     /// The current font.
     @Entry public var font: Font = .body
 
-    /// A font overlay storing font modifications. If these conflict with the
-    /// font's internal overlay, these win.
+    /// A font overlay storing font modifications.
+    ///
+    /// If these conflict with the font's internal overlay, these win out.
     ///
     /// We keep this separate overlay for modifiers because we want modifiers to
     /// be persisted even if the developer sets a custom font further down the
@@ -240,8 +276,10 @@ extension EnvironmentValues {
     /// The current color scheme of the current view scope.
     @Entry public var colorScheme: ColorScheme = .light
 
-    /// The foreground color. `nil` means that the default foreground color of
-    /// the current color scheme should be used.
+    /// The foreground color.
+    ///
+    /// `nil` means that the default foreground color of the current color scheme
+    /// should be used.
     @Entry public var foregroundColor: Color?
 
     /// Called when a text field gets submitted (usually due to the user
@@ -256,9 +294,9 @@ extension EnvironmentValues {
     /// This affects autocomplete suggestions, and on devices with no physical keyboard, which
     /// on-screen keyboard to use.
     ///
-    /// Do not use this in place of validation, even if you only plan on supporting mobile
-    /// devices, as this does not restrict copy-paste and many mobile devices support bluetooth
-    /// keyboards.
+    /// - Warning: Do not use this in place of validation, even if you only plan on supporting
+    ///   mobile devices, as this does not restrict copy-paste and many mobile devices support
+    ///   Bluetooth keyboards.
     @Entry public var textContentType: TextContentType = .text
 
     /// The way that scrollable content interacts with the software keyboard.
@@ -270,7 +308,9 @@ extension EnvironmentValues {
     /// The style of toggle to use.
     @Entry public var toggleStyle: ToggleStyle = .button
 
-    /// Whether the text should be selectable. Set by ``View/textSelectionEnabled(_:)``.
+    /// Whether the text should be selectable.
+    ///
+    /// Set by ``View/textSelectionEnabled(_:)``.
     @Entry public var isTextSelectionEnabled: Bool = false
 
     /// The resizing behaviour of windows.
@@ -313,8 +353,9 @@ extension EnvironmentValues {
     @Entry private var windowStore = UncheckedSendable<Any?>(wrappedValue: nil)
 
     /// The backend's representation of the window that the current view is
-    /// in, if any. This is a very internal detail that should never get
-    /// exposed to users.
+    /// in, if any.
+    ///
+    /// This is a very internal detail that should never get exposed to users.
     package var window: Any? {
         get {
             windowStore.wrappedValue
@@ -329,8 +370,9 @@ extension EnvironmentValues {
     @Entry private var sheetStore = UncheckedSendable<Any?>(wrappedValue: nil)
 
     /// The backend's representation of the sheet that the current view is
-    /// in, if any. This is a very internal detail that should never get
-    /// exposed to users.
+    /// in, if any.
+    ///
+    /// This is a very internal detail that should never get exposed to users.
     package var sheet: Any? {
         get {
             sheetStore.wrappedValue
@@ -352,7 +394,9 @@ extension EnvironmentValues {
     /// The display style used by ``DatePicker``.
     @Entry public var datePickerStyle: DatePickerStyle = .automatic
 
-    /// Whether user interaction is enabled. Set by ``View/disabled(_:)``.
+    /// Whether user interaction is enabled.
+    ///
+    /// Set by ``View/disabled(_:)``.
     @Entry public var isEnabled: Bool = true
 
     /// The number of lines text can occupy and whether to reserve that space.

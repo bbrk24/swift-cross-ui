@@ -1,13 +1,13 @@
 extension Color {
     /// A resolved RGBA color.
     public struct Resolved: Sendable, Equatable, Hashable, Codable {
-        /// The red component.
+        /// The red component (from 0 to 1).
         public var red: Float
-        /// The green component.
+        /// The green component (from 0 to 1).
         public var green: Float
-        /// The blue component.
+        /// The blue component (from 0 to 1).
         public var blue: Float
-        /// The alpha component (aka the opacity).
+        /// The alpha component (aka the opacity, from 0 to 1).
         public var opacity: Float
 
         /// Creates an instance.

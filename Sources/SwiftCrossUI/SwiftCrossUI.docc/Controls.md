@@ -16,7 +16,6 @@ Employ controls to receive user input.
 
 ### Related
 
-- ``DoubleConvertible``
 - ``MenuItem``
 - ``MenuItemsBuilder``
 - ``ToggleStyle``
