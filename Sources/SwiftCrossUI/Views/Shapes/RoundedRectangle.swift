@@ -488,7 +488,7 @@ extension RoundedRectangle.InsetShape: InsettableShape {
         return ViewSize(max(proposedWidth, insetAmount * 2), max(proposedHeight, insetAmount * 2))
     }
 
-    public func inset(by amount: Double) -> RoundedRectangle.InsetShape {
-        .init(initialCornerRadius: initialCornerRadius, insetAmount: insetAmount + amount)
+    public func inset(by amount: Double) -> Self {
+        Self(initialCornerRadius: initialCornerRadius, insetAmount: insetAmount + amount)
     }
 }

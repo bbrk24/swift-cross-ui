@@ -7,7 +7,10 @@ public protocol InsettableShape: Shape {
     nonisolated func inset(by amount: Double) -> InsetShape
 }
 
-/// The `InsetShape` implementation used by ``Rectangle``, ``Ellipse``, and ``Capsule``.
+/// The `InsetShape` implementation used by ``Rectangle``, ``Ellipse``, ``Circle``, and ``Capsule``.
+/// 
+/// This implementation only works for convex shapes where insetting the shape is equivalent to
+/// making the shape smaller.
 struct InsettableShapeImpl<Base: Shape>: InsettableShape {
     var inset: Double
     var base: Base
