@@ -801,13 +801,19 @@ public final class GtkBackend: AppBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
+        let imageView = imageView as! Gtk.Picture
+
+        // TODO: respect accessibilityHidden
+        imageView.alternativeText = accessibilityLabel
+
         guard dataHasChanged else {
             return
         }
 
-        let imageView = imageView as! Gtk.Picture
         let buffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: rgbaData.count)
         memcpy(buffer.baseAddress!, rgbaData, rgbaData.count)
         let pixbuf = gdk_pixbuf_new_from_data(

@@ -7,6 +7,10 @@ public struct Image: Sendable {
     private var isResizable = false
     /// The source of the image.
     private var source: Source
+    /// The image's accessibility label, if provided.
+    private var accessibilityLabel: String?
+    /// If true, the image should be ignored by accessibility features like screen readers.
+    private var accessibilityHidden = false
 
     enum Source: Equatable {
         case url(URL, useFileExtension: Bool)
@@ -37,6 +41,28 @@ public struct Image: Sendable {
     public func resizable() -> Self {
         var image = self
         image.isResizable = true
+        return image
+    }
+
+    /// Adds a label to the image that describes its contents.
+    /// - Parameters
+    ///   - label: The accessibility label to apply.
+    ///   - isEnabled: If `true` the accessibility label is applied; otherwise the accessibility
+    ///     label is unchanged.
+    public func accessibilityLabel(_ label: String, isEnabled: Bool = true) -> Image {
+        // label is not @autoclosure so as to match SwiftUI:
+        // https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:isenabled:)
+        var image = self
+        if isEnabled {
+            image.accessibilityLabel = label
+        }
+        return image
+    }
+
+    /// Specifies whether to hide this view from system accessibility features.
+    public func accessibilityHidden(_ hidden: Bool) -> Image {
+        var image = self
+        image.accessibilityHidden = hidden
         return image
     }
 
@@ -147,6 +173,8 @@ extension Image: TypeSafeView {
                     targetWidth: size.x,
                     targetHeight: size.y,
                     dataHasChanged: children.imageChanged,
+                    accessibilityLabel: accessibilityLabel,
+                    accessibilityHidden: accessibilityHidden,
                     environment: environment
                 )
                 if children.isContainerEmpty {

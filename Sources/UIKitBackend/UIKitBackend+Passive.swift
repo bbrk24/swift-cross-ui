@@ -100,10 +100,16 @@ extension UIKitBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
-        guard dataHasChanged else { return }
         let wrapper = imageView as! WrapperWidget<UIImageView>
+
+        wrapper.child.isAccessibilityElement = !accessibilityHidden
+        wrapper.child.accessibilityLabel = accessibilityLabel
+
+        guard dataHasChanged else { return }
         let ciImage = CIImage(
             bitmapData: Data(rgbaData),
             bytesPerRow: width * 4,

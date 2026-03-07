@@ -1015,13 +1015,21 @@ public final class AppKitBackend: AppBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
+        let imageView = imageView as! NSImageView
+
+        defer {
+            imageView.cell?.setAccessibilityElement(!accessibilityHidden)
+            imageView.cell?.setAccessibilityLabel(accessibilityLabel)
+        }
+
         guard dataHasChanged else {
             return
         }
 
-        let imageView = imageView as! NSImageView
         var rgbaData = rgbaData
         let context = CGContext(
             data: &rgbaData,

@@ -1200,9 +1200,14 @@ public final class WinUIBackend: AppBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
         let imageView = imageView as! WinUI.Image
+
+        // TODO: Accessibility
+
         let bitmap = WriteableBitmap(Int32(width), Int32(height))
         let buffer = try! bitmap.pixelBuffer.buffer!
         memcpy(buffer, rgbaData, min(Int(bitmap.pixelBuffer.length), rgbaData.count))

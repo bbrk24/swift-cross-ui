@@ -717,6 +717,9 @@ public protocol AppBackend: Sendable {
     ///   - dataHasChanged: If `false`, then `rgbaData` hasn't changed since the
     ///     last call, so backends that don't have to manually resize the image
     ///     data don't have to do anything.
+    ///   - accessibilityLabel: The image's accessibility label, if set.
+    ///   - accessibilityHidden: If true, the image should be ignored by
+    ///     accessibility features like screen readers.
     ///   - environment: The current environment.
     func updateImageView(
         _ imageView: Widget,
@@ -726,6 +729,8 @@ public protocol AppBackend: Sendable {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     )
 
@@ -1623,6 +1628,8 @@ extension AppBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
         todo()

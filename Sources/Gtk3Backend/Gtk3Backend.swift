@@ -788,6 +788,8 @@ public final class Gtk3Backend: AppBackend {
         targetWidth: Int,
         targetHeight: Int,
         dataHasChanged: Bool,
+        accessibilityLabel: String?,
+        accessibilityHidden: Bool,
         environment: EnvironmentValues
     ) {
         let imageView = imageView as! Gtk3.Image
@@ -812,6 +814,24 @@ public final class Gtk3Backend: AppBackend {
 
         imageView.setCairoSurface(surface)
         imageView.show()
+
+        // TODO: respect accessibilityHidden
+        // TODO: fix possible memory leak
+        if let atkObjectPtr = gtk_widget_get_accessible(imageView.widgetPointer) {
+            atkObjectPtr.pointee.role = ATK_ROLE_IMAGE
+
+            if let oldDescriptionPtr = atkObjectPtr.pointee.description {
+                free(oldDescriptionPtr)
+            }
+            
+            if let accessibilityLabel {
+                atkObjectPtr.pointee.description = accessibilityLabel.utf8CString.withUnsafeBytes {
+                    strdup($0.baseAddress!)
+                }
+            } else {
+                atkObjectPtr.pointee.description = nil
+            }
+        }
     }
 
     // private class Tables {
