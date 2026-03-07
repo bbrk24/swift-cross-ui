@@ -456,20 +456,20 @@ extension RoundedRectangle: Shape {
 
 // MARK: InsettableShape
 extension RoundedRectangle: InsettableShape {
-    public func inset(by amount: Double) -> InsetShape {
-        InsetShape(initialCornerRadius: cornerRadius, insetAmount: amount)
+    public func inset(by amount: Double) -> some InsettableShape {
+        InsetShapeImpl(initialCornerRadius: cornerRadius, insetAmount: amount)
     }
 
-    public struct InsetShape {
+    struct InsetShapeImpl {
         var initialCornerRadius: Double
         var insetAmount: Double
     }
 }
 
-extension RoundedRectangle.InsetShape: InsettableShape {
+extension RoundedRectangle.InsetShapeImpl: InsettableShape {
     private var actualCornerRadius: Double { max(0, initialCornerRadius - insetAmount) }
 
-    public func path(in bounds: Path.Rect) -> Path {
+    func path(in bounds: Path.Rect) -> Path {
         RoundedRectangle(cornerRadius: actualCornerRadius)
             .path(
                 in: .init(
@@ -481,14 +481,14 @@ extension RoundedRectangle.InsetShape: InsettableShape {
             )
     }
 
-    public func size(fitting proposal: ProposedViewSize) -> ViewSize {
+    func size(fitting proposal: ProposedViewSize) -> ViewSize {
         let proposedWidth = proposal.width ?? 10
         let proposedHeight = proposal.height ?? 10
 
         return ViewSize(max(proposedWidth, insetAmount * 2), max(proposedHeight, insetAmount * 2))
     }
 
-    public func inset(by amount: Double) -> Self {
+    func inset(by amount: Double) -> Self {
         Self(initialCornerRadius: initialCornerRadius, insetAmount: insetAmount + amount)
     }
 }

@@ -8,7 +8,7 @@ public protocol InsettableShape: Shape {
 }
 
 /// The `InsetShape` implementation used by ``Rectangle``, ``Ellipse``, ``Circle``, and ``Capsule``.
-/// 
+///
 /// This implementation only works for convex shapes where insetting the shape is equivalent to
 /// making the shape smaller.
 struct InsettableShapeImpl<Base: Shape>: InsettableShape {
