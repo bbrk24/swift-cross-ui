@@ -632,6 +632,19 @@ public protocol AppBackend: Sendable {
         maximum maximumWidth: Int
     )
 
+    /// Create a container capable of showing a textual tooltip.
+    /// 
+    /// - Parameters:
+    ///   - child: The widget being wrapped to show a tooltip over.
+    func createTooltipContainer(wrapping child: Widget) -> Widget
+    /// Update the tooltip shown by a widget.
+    /// 
+    /// - Parameters:
+    ///   - widget: The widget to update the tooltip for. Will always have been
+    ///     created by ``createTooltipContainer()``.
+    ///   - tooltip: The text to be shown on hover.
+    func updateTooltipContainer(widget: Widget, tooltip: String)
+
     // MARK: Passive views
 
     /// Gets the size that the given text would have if it were laid out while
@@ -1585,6 +1598,14 @@ extension AppBackend {
         minimum minimumWidth: Int,
         maximum maximumWidth: Int
     ) {
+        todo()
+    }
+
+    public func createTooltipContainer(wrapping child: Widget) -> Widget {
+        todo()
+    }
+
+    public func updateTooltipContainer(widget: Widget, tooltip: String) {
         todo()
     }
 

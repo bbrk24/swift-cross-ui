@@ -696,6 +696,15 @@ public final class GtkBackend: AppBackend {
         listView.rowSelected = handler
     }
 
+    public func createTooltipContainer(wrapping child: Widget) -> Widget {
+        TooltipContainer(child)
+    }
+
+    public func updateTooltipContainer(widget: Widget, tooltip: String) {
+        let widget = widget as! TooltipContainer
+        widget.setTooltip(text: tooltip)
+    }
+
     // MARK: Passive views
 
     public func createTextView() -> Widget {
@@ -1940,6 +1949,55 @@ class CustomLabel: Label {
                 (Double(height) * Double(PANGO_SCALE))
                     .rounded(.towardZero))
         )
+    }
+}
+
+final class TooltipContainer: Fixed {
+    private var tooltipLength = 0
+    private var tooltipText: UnsafeMutablePointer<CChar>?
+
+    init(_ child: Widget) {
+        super.init()
+        self.put(child, x: 0, y: 0)
+        child.parentWidget = self
+    }
+
+    deinit {
+        deallocateText()
+    }
+
+    func setTooltip(text: String) {
+        text.utf8CString.withUnsafeBufferPointer { buf in
+            // TODO(bbrk24): Should this be `>=` or `==`?
+            if tooltipLength >= buf.count {
+                strcpy(tooltipText!, buf.baseAddress!)
+            } else {
+                deallocateText()
+
+                errno = 0
+                tooltipText = strdup(buf.baseAddress!)
+                if tooltipText == nil {
+                    // Copy errno into a local to prevent it from being lost.
+                    // Name taken from errno(3) man page.
+                    let errsv = errno 
+                    logger.error("Failed to copy tooltip text into C string. errno = \(errsv)")
+                } else {
+                    tooltipLength = buf.count
+                }
+            }
+        }
+
+        gtk_widget_set_tooltip_text(widgetPointer, tooltipText)
+    }
+
+    private func deallocateText() {
+        if let tooltipText {
+            tooltipText.deinitialize(count: tooltipLength)
+            free(tooltipText)
+        }
+
+        tooltipText = nil
+        tooltipLength = 0
     }
 }
 
