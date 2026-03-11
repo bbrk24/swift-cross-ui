@@ -1686,10 +1686,10 @@ class CustomLabel: Label {
 }
 
 final class TooltipContainer: Fixed {
-    private var tooltipLength = 0
-    private var tooltipText: UnsafeMutablePointer<CChar>?
+    private var tooltip: UnsafeMutableBufferPointer<CChar>
 
     init(_ child: Widget) {
+        self.tooltip = UnsafeMutableBufferPointer(start: nil, count: 0)
         super.init()
         self.put(child, x: 0, y: 0)
         child.parentWidget = self
@@ -1702,34 +1702,25 @@ final class TooltipContainer: Fixed {
     func setTooltip(text: String) {
         text.utf8CString.withUnsafeBufferPointer { buf in
             // TODO(bbrk24): Should this be `>=` or `==`?
-            if tooltipLength >= buf.count {
-                strcpy(tooltipText!, buf.baseAddress!)
+            if tooltip.count >= buf.count {
+                strcpy(tooltip.baseAddress!, buf.baseAddress!)
             } else {
                 deallocateText()
 
-                errno = 0
-                tooltipText = strdup(buf.baseAddress!)
-                if tooltipText == nil {
-                    // Copy errno into a local to prevent it from being lost.
-                    // Name taken from errno(3) man page.
-                    let errsv = errno 
-                    logger.error("Failed to copy tooltip text into C string. errno = \(errsv)")
-                } else {
-                    tooltipLength = buf.count
-                }
+                tooltip = .allocate(capacity: buf.count)
+                tooltip.initialize(from: buf)
             }
         }
 
-        gtk_widget_set_tooltip_text(widgetPointer, tooltipText)
+        gtk_widget_set_tooltip_text(widgetPointer, tooltip.baseAddress)
     }
 
     private func deallocateText() {
-        if let tooltipText {
-            tooltipText.deinitialize(count: tooltipLength)
-            free(tooltipText)
+        if tooltip.count > 0 {
+            tooltip.deinitialize()
+            tooltip.deallocate()
         }
 
-        tooltipText = nil
-        tooltipLength = 0
+        tooltip = UnsafeMutableBufferPointer(start: nil, count: 0)
     }
 }

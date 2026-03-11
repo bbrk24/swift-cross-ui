@@ -47,7 +47,8 @@ struct ContentView: View {
             Text("Random Number: \(viewModel.randomNumber)")
             Button("Generate") {
                 viewModel.randomNumber = Int.random(
-                    in: Int(viewModel.minNum)...Int(viewModel.maxNum))
+                    in: Int(viewModel.minNum)...Int(viewModel.maxNum)
+                )
             }
 
             Text("Minimum: \(viewModel.minNum)")
