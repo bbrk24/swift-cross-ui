@@ -481,9 +481,7 @@ public final class AppKitBackend: AppBackend {
     }
     
     public func createTooltipContainer(wrapping child: NSView) -> NSView {
-        let container = createContainer()
-        insert(child, into: container, at: 0)
-        return container
+        child
     }
     
     public func updateTooltipContainer(_ widget: NSView, tooltip: String) {

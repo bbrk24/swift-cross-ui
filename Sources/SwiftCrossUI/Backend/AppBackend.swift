@@ -633,7 +633,10 @@ public protocol AppBackend: Sendable {
     )
 
     /// Create a container capable of showing a textual tooltip.
-    /// 
+    ///
+    /// If no container is necessary, this method is allowed to return `child`
+    /// unmodified.
+    ///
     /// - Parameters:
     ///   - child: The widget being wrapped to show a tooltip over.
     func createTooltipContainer(wrapping child: Widget) -> Widget
@@ -641,7 +644,7 @@ public protocol AppBackend: Sendable {
     /// 
     /// - Parameters:
     ///   - widget: The widget to update the tooltip for. Will always have been
-    ///     created by ``createTooltipContainer()``.
+    ///     created by ``createTooltipContainer(wrapping:)``.
     ///   - tooltip: The text to be shown on hover.
     func updateTooltipContainer(_ widget: Widget, tooltip: String)
 
