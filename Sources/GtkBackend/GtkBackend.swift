@@ -700,7 +700,7 @@ public final class GtkBackend: AppBackend {
         TooltipContainer(child)
     }
 
-    public func updateTooltipContainer(widget: Widget, tooltip: String) {
+    public func updateTooltipContainer(_ widget: Widget, tooltip: String) {
         let widget = widget as! TooltipContainer
         widget.setTooltip(text: tooltip)
     }
@@ -1959,7 +1959,6 @@ final class TooltipContainer: Fixed {
         self.tooltip = UnsafeMutableBufferPointer(start: nil, count: 0)
         super.init()
         self.put(child, x: 0, y: 0)
-        child.parentWidget = self
     }
 
     deinit {

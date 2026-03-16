@@ -663,7 +663,7 @@ public final class WinUIBackend: AppBackend {
         TooltipContainer(child: child)
     }
 
-    public func updateTooltipContainer(widget: Widget, tooltip: String) {
+    public func updateTooltipContainer(_ widget: Widget, tooltip: String) {
         let widget = widget as! TooltipContainer
         widget.tooltip.content = tooltip
     }

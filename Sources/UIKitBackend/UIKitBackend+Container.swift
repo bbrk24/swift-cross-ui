@@ -228,7 +228,7 @@ extension UIKitBackend {
         TooltipWidget(child: child)
     }
     
-    public func updateTooltipContainer(widget: Widget, tooltip: String) {
+    public func updateTooltipContainer(_ widget: Widget, tooltip: String) {
         let widget = widget as! TooltipWidget
         widget.text = tooltip
     }

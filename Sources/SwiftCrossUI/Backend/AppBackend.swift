@@ -643,7 +643,7 @@ public protocol AppBackend: Sendable {
     ///   - widget: The widget to update the tooltip for. Will always have been
     ///     created by ``createTooltipContainer()``.
     ///   - tooltip: The text to be shown on hover.
-    func updateTooltipContainer(widget: Widget, tooltip: String)
+    func updateTooltipContainer(_ widget: Widget, tooltip: String)
 
     // MARK: Passive views
 
@@ -1605,7 +1605,7 @@ extension AppBackend {
         todo()
     }
 
-    public func updateTooltipContainer(widget: Widget, tooltip: String) {
+    public func updateTooltipContainer(_ widget: Widget, tooltip: String) {
         todo()
     }
 

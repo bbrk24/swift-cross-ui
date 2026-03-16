@@ -60,6 +60,6 @@ struct HelpView<Content: View>: View, TypeSafeView {
     ) {
         let size = children.child0.commit().size
         backend.setSize(of: widget, to: size.vector)
-        backend.updateTooltipContainer(widget: widget, tooltip: helpText)
+        backend.updateTooltipContainer(widget, tooltip: helpText)
     }
 }

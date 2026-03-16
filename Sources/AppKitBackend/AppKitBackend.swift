@@ -486,7 +486,7 @@ public final class AppKitBackend: AppBackend {
         return container
     }
     
-    public func updateTooltipContainer(widget: NSView, tooltip: String) {
+    public func updateTooltipContainer(_ widget: NSView, tooltip: String) {
         widget.toolTip = tooltip
     }
 
