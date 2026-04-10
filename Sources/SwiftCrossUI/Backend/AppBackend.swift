@@ -299,8 +299,13 @@ public protocol AppBackend: Sendable {
     /// (such as macOS's menu bar), and others may render their own menu bar
     /// within the application.
     ///
-    /// - Parameter submenus: The submenus of the global menu.
-    func setApplicationMenu(_ submenus: [ResolvedMenu.Submenu])
+    /// - Parameters:
+    ///   - submenus: The submenus of the global menu.
+    ///   - environment: The menu's environment.
+    func setApplicationMenu(
+        _ submenus: [ResolvedMenu.Submenu],
+        environment: EnvironmentValues
+    )
 
     /// Runs an action in the app's main thread if required to perform UI updates
     /// by the backend.
@@ -1552,7 +1557,10 @@ extension AppBackend {
 
     // MARK: Application
 
-    public func setApplicationMenu(_ submenus: [ResolvedMenu.Submenu]) {
+    public func setApplicationMenu(
+        _ submenus: [ResolvedMenu.Submenu],
+        environment: EnvironmentValues
+    ) {
         todo()
     }
 

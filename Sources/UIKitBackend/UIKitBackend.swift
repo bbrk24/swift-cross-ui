@@ -264,6 +264,7 @@ open class ApplicationDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var menu: [ResolvedMenu.Submenu] = []
+    var environment: EnvironmentValues?
 
     public required override init() {
         super.init()
@@ -356,7 +357,11 @@ open class ApplicationDelegate: UIResponder, UIApplicationDelegate {
         for submenu in menu {
             let menuIdentifier = mapMenuIdentifier(submenu.label)
             let menu = UIKitBackend.buildMenu(
-                content: submenu.content, label: submenu.label, identifier: menuIdentifier)
+                content: submenu.content,
+                label: submenu.label,
+                identifier: menuIdentifier,
+                environment: environment!
+            )
 
             if builder.menu(for: menuIdentifier) == nil {
                 builder.insertChild(menu, atEndOfMenu: .root)
