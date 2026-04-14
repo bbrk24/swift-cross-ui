@@ -3,6 +3,7 @@ import SwiftCrossUI
 import UIKit
 
 public final class UIKitBackend: AppBackend {
+    static var onWindowEnvironmentChange: (() -> Void)?
     static var onBecomeActive: (() -> Void)?
     static var onReceiveURL: ((URL) -> Void)?
     static var queuedURLs: [URL] = []
@@ -175,6 +176,21 @@ public final class UIKitBackend: AppBackend {
                 break
         }
 
+        switch UIApplication.shared.applicationState {
+            case .active: environment.appPhase = .active
+            case .inactive: environment.appPhase = .inactive
+            case .background: environment.appPhase = .background
+            @unknown default:
+                logger.warning(
+                    """
+                    UIApplication.applicationState returned unknown state
+                    '\(UIApplication.shared.applicationState)'; ignoring and returning
+                    'active' instead
+                    """
+                )
+                environment.appPhase = .active
+        }
+
         return environment
     }
 
@@ -191,6 +207,22 @@ public final class UIKitBackend: AppBackend {
                 }
             }
         }
+
+        let notifications = [
+            UIApplication.willEnterForegroundNotification,
+            UIApplication.didBecomeActiveNotification,
+            UIApplication.willResignActiveNotification,
+            UIApplication.didEnterBackgroundNotification,
+        ]
+        for notification in notifications {
+            NotificationCenter.default.addObserver(
+                forName: notification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                action()
+            }
+        }
     }
 
     public func computeWindowEnvironment(
@@ -199,6 +231,7 @@ public final class UIKitBackend: AppBackend {
     ) -> EnvironmentValues {
         // TODO: Record window scale factor in here
         rootEnvironment
+            .with(\.scenePhase, window.isKeyWindow ? .active : .inactive)
     }
 
     public func setWindowEnvironmentChangeHandler(
@@ -206,6 +239,8 @@ public final class UIKitBackend: AppBackend {
         to action: @escaping () -> Void
     ) {
         // TODO: Notify when window scale factor changes
+
+        Self.onWindowEnvironmentChange = action
     }
 
     public func runInMainThread(action: @escaping @MainActor () -> Void) {
@@ -278,7 +313,7 @@ open class ApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func applicationDidBecomeActive(_ application: UIApplication) {
         UIKitBackend.onBecomeActive?()
 
-        // We only want to notify the first time. Otherwise the app's view
+        // We only want to notify the first time. Otherwise the app's scene
         // graph gets regenerated every time the app gets foregrounded,
         // causing very strange results.
         UIKitBackend.onBecomeActive = nil
@@ -399,7 +434,7 @@ open class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         UIKitBackend.onBecomeActive?()
 
-        // We only want to notify the first time. Otherwise the app's view
+        // We only want to notify the first time. Otherwise the app's scene
         // graph gets regenerated every time the app gets foregrounded,
         // causing very strange results.
         UIKitBackend.onBecomeActive = nil
@@ -417,5 +452,21 @@ open class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         {
             onReceiveURL(url)
         }
+    }
+
+    open func sceneDidBecomeActive(_ scene: UIScene) {
+        UIKitBackend.onWindowEnvironmentChange?()
+    }
+
+    open func sceneWillResignActive(_ scene: UIScene) {
+        UIKitBackend.onWindowEnvironmentChange?()
+    }
+
+    open func sceneWillEnterForeground(_ scene: UIScene) {
+        UIKitBackend.onWindowEnvironmentChange?()
+    }
+
+    open func sceneDidEnterBackground(_ scene: UIScene) {
+        UIKitBackend.onWindowEnvironmentChange?()
     }
 }

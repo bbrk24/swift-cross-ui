@@ -40,7 +40,7 @@ public final class Gtk3Backend: AppBackend {
 
     var gtkApp: Application
 
-    /// A window to be returned on the next call to ``GtkBackend/createWindow``.
+    /// A window to be returned on the next call to ``Gtk3Backend/createWindow``.
     /// This is necessary because Gtk creates a root window no matter what, and
     /// this needs to be returned on the first call to `createWindow`.
     var precreatedWindow: Window?
@@ -48,6 +48,8 @@ public final class Gtk3Backend: AppBackend {
     /// All current windows associated with the application. Doesn't include the
     /// precreated window until it gets 'created' via `createWindow`.
     var windows: [Window] = []
+
+    private var rootEnvironmentChangeHandler: (() -> Void)?
 
     private struct LogLocation: Hashable, Equatable {
         let file: String
@@ -173,6 +175,10 @@ public final class Gtk3Backend: AppBackend {
                 width: defaultSize.x,
                 height: defaultSize.y
             )
+        }
+
+        window.notifyIsActive = { _ in
+            self.rootEnvironmentChangeHandler?()
         }
 
         return window
@@ -521,10 +527,12 @@ public final class Gtk3Backend: AppBackend {
 
     public func computeRootEnvironment(defaultEnvironment: EnvironmentValues) -> EnvironmentValues {
         defaultEnvironment
+            .with(\.appPhase, windows.contains(where: \.isActive) ? .active : .inactive)
     }
 
     public func setRootEnvironmentChangeHandler(to action: @escaping () -> Void) {
         // TODO: React to theme changes
+        self.rootEnvironmentChangeHandler = action
     }
 
     public func computeWindowEnvironment(
@@ -532,7 +540,9 @@ public final class Gtk3Backend: AppBackend {
         rootEnvironment: EnvironmentValues
     ) -> EnvironmentValues {
         let windowScaleFactor = Int(gtk_widget_get_scale_factor(window.widgetPointer))
-        return rootEnvironment.with(\.windowScaleFactor, Double(windowScaleFactor))
+        return rootEnvironment
+            .with(\.windowScaleFactor, Double(windowScaleFactor))
+            .with(\.scenePhase, window.isActive ? .active : .inactive)
     }
 
     public func setWindowEnvironmentChangeHandler(

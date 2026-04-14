@@ -85,8 +85,8 @@ public final class WinUIBackend: AppBackend {
         var sliderChangeActions: [ObjectIdentifier: (Double) -> Void] = [:]
         var textFieldChangeActions: [ObjectIdentifier: (String) -> Void] = [:]
         var textFieldSubmitActions: [ObjectIdentifier: () -> Void] = [:]
-        var themeChangeAction: (() -> Void)?
     }
+    private var rootEnvironmentChangeHandler: (() -> Void)?
 
     var internalState: InternalState
     nonisolated(unsafe) private var dispatcherQueue: WinAppSDK.DispatcherQueue?
@@ -137,7 +137,7 @@ public final class WinUIBackend: AppBackend {
 
             // Handle theme changes
             UWP.UISettings().colorValuesChanged.addHandler { _, _ in
-                self.internalState.themeChangeAction?()
+                self.rootEnvironmentChangeHandler?()
             }
 
             // TODO: Read in previously hardcoded values from the application's
@@ -292,7 +292,7 @@ public final class WinUIBackend: AppBackend {
         window.setChild(widget)
         try! widget.updateLayout()
         widget.actualThemeChanged.addHandler { _, _ in
-            self.internalState.themeChangeAction?()
+            self.rootEnvironmentChangeHandler?()
         }
     }
 
@@ -407,10 +407,11 @@ public final class WinUIBackend: AppBackend {
         return
             defaultEnvironment
             .with(\.colorScheme, isLight ? .light : .dark)
+            .with(\.appPhase, windows.contains(where: \.isActive) ? .active : .inactive)
     }
 
     public func setRootEnvironmentChangeHandler(to action: @escaping () -> Void) {
-        internalState.themeChangeAction = action
+        self.rootEnvironmentChangeHandler = action
     }
 
     public func computeWindowEnvironment(
@@ -420,6 +421,7 @@ public final class WinUIBackend: AppBackend {
         // TODO: Compute window scale factor (easy enough, but we would also have to keep
         //   it up-to-date then, which is kinda annoying for now)
         rootEnvironment
+            .with(\.scenePhase, window.isActive ? .active : .inactive)
     }
 
     public func setWindowEnvironmentChangeHandler(
@@ -427,6 +429,17 @@ public final class WinUIBackend: AppBackend {
         to action: @escaping () -> Void
     ) {
         // TODO: Notify when window scale factor changes
+
+        // NB: This event fires when the window is activated _or_ deactivated.
+        window.activated.addHandler { _, _ in
+            if let rootHandler = self.rootEnvironmentChangeHandler {
+                rootHandler()
+                // Don't bother calling `action` since this window's environment
+                // will be recomputed anyway.
+            } else {
+                action()
+            }
+        }
     }
 
     public func setIncomingURLHandler(to action: @escaping (URL) -> Void) {
@@ -2208,6 +2221,7 @@ public class CustomWindow: WinUI.Window {
     var child: WinUIBackend.Widget?
     var grid: WinUI.Grid
     var cachedAppWindow: WinAppSDK.AppWindow!
+    var isActive = false
 
     private(set) var menuBarIsVisible = false
 
@@ -2256,6 +2270,19 @@ public class CustomWindow: WinUI.Window {
         grid.children.append(menuBar)
         WinUI.Grid.setRow(menuBar, 0)
         self.content = grid
+
+        // NB: This event fires when the window is activated _or_ deactivated.
+        self.activated.addHandler { [weak self] _, args in
+            switch args?.windowActivationState {
+                case .codeActivated, .pointerActivated: self?.isActive = true
+                case .deactivated: self?.isActive = false
+
+                // NB: The compiler apparently thinks we didn't exhaustively switch
+                // over this enum without this `default` (even after adding a `case nil`).
+                // Might be because it doesn't treat the underlying C enum as a Swift enum?
+                default: break
+            }
+        }
 
         // Caching appWindow is apparently a good idea in terms of performance:
         // https://github.com/thebrowsercompany/swift-winrt/issues/199#issuecomment-2611006020
