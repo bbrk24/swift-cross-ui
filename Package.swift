@@ -31,12 +31,19 @@ let defaultBackendDependencies: [Target.Dependency]
 if let backend = env["SCUI_DEFAULT_BACKEND"] {
     defaultBackendDependencies = [.target(name: backend)]
 } else {
-    defaultBackendDependencies = [
-        .target(name: "AppKitBackend", condition: .when(platforms: [.macOS])),
-        .target(name: "UIKitBackend", condition: .when(platforms: [.iOS, .tvOS, .macCatalyst, .visionOS])),
-        .target(name: "WinUIBackend", condition: .when(platforms: [.windows])),
-        .target(name: "GtkBackend", condition: .when(platforms: [.linux])),
-    ]
+    // With no #if here, Windows and Linux dependencies are also compiled when building for
+    // UIKit platforms.
+    #if os(macOS)
+        defaultBackendDependencies = [
+            .target(name: "AppKitBackend", condition: .when(platforms: [.macOS])),
+            .target(name: "UIKitBackend", condition: .when(platforms: [.iOS, .tvOS, .macCatalyst, .visionOS])),
+        ]
+    #else
+        defaultBackendDependencies = [
+            .target(name: "WinUIBackend", condition: .when(platforms: [.windows])),
+            .target(name: "GtkBackend", condition: .when(platforms: [.linux])),
+        ]
+    #endif
 }
 
 let hotReloadingEnabled: Bool
