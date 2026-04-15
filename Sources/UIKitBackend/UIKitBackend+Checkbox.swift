@@ -94,11 +94,11 @@ final class UIButtonCheckbox: WrapperWidget<UIButton>, CheckboxWidget {
 extension UIKitBackend {
     public func createCheckbox() -> any WidgetProtocol {
         #if targetEnvironment(macCatalyst)
-        if #available(macCatalyst 14, *),
-           UIDevice.current.userInterfaceIdiom == .mac
-        {
-            return UISwitchCheckbox()
-        }
+            if #available(macCatalyst 14, *),
+                UIDevice.current.userInterfaceIdiom == .mac
+            {
+                return UISwitchCheckbox()
+            }
         #endif
         
         return UIButtonCheckbox()
