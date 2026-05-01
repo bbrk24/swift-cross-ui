@@ -246,7 +246,6 @@ public final class AppKitBackend: AppBackend {
                 return NSCustomMenuItem.separator()
             case .submenu(let submenu):
                 return renderSubmenu(submenu, environment: environment)
-
             case .modifiedEnvironment(let item, let modification):
                 return renderMenuItem(
                     item,
@@ -772,12 +771,25 @@ public final class AppKitBackend: AppBackend {
     ) {
         if let picker = picker as? NSPopUpButton {
             picker.isEnabled = environment.isEnabled
-            picker.menu?.removeAllItems()
-            for option in options {
-                let item = NSMenuItem()
+            
+            let menu = picker.menu!
+            
+            for (item, option) in zip(menu.items, options) {
                 item.attributedTitle = Self.attributedString(for: option, in: environment)
-                picker.menu?.addItem(item)
             }
+            
+            if menu.numberOfItems < options.count {
+                for i in menu.numberOfItems..<options.count {
+                    let item = NSMenuItem()
+                    item.attributedTitle = Self.attributedString(for: options[i], in: environment)
+                    menu.addItem(item)
+                }
+            } else {
+                for i in (options.count..<menu.numberOfItems).reversed() {
+                    menu.removeItem(at: i)
+                }
+            }
+            
             picker.onAction = { picker in
                 let picker = picker as! NSPopUpButton
                 onChange(picker.indexOfSelectedItem)
