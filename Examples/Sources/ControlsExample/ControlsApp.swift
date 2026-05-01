@@ -21,6 +21,11 @@ enum BuiltInPickerStyle: CaseIterable, Equatable {
     }
 }
 
+#if canImport(AndroidBackend)
+// TODO(bbrk24): Update this once AndroidBackend supports scrolling
+typealias ScrollView = VStack
+#endif
+
 @main
 @HotReloadable
 struct ControlsApp: App {
@@ -56,6 +61,7 @@ struct ControlsApp: App {
                             Text("Count: \(count)")
                         }
 
+                        #if !canImport(AndroidBackend)
                         VStack {
                             Text("Menu button")
                             Menu("Menu") {
@@ -125,6 +131,7 @@ struct ControlsApp: App {
                                     .frame(width: progressViewSize, height: progressViewSize)
                             }
                         #endif
+                        #endif
 
                         #if !canImport(Gtk3Backend)
                             VStack {
@@ -154,7 +161,7 @@ struct ControlsApp: App {
                                 Text("You chose: \(flavor ?? "Nothing yet!")")
                             }
 
-                            #if !os(tvOS)
+                            #if !os(tvOS) && !canImport(AndroidBackend)
                                 VStack {
                                     Text("Selected date: \(date)")
 
@@ -177,8 +184,10 @@ struct ControlsApp: App {
                         #endif
                     }.padding().disabled(!enabled)
 
+                    #if !canImport(AndroidBackend)
                     Toggle(enabled ? "Disable all" : "Enable all", isOn: $enabled)
                         .padding()
+                    #endif
                 }
             }
         }.defaultSize(width: 400, height: 600)

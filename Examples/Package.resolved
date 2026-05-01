@@ -212,8 +212,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-cwinrt",
       "state" : {
-        "revision" : "f0900d61c863ced3a230d757d5dbda7de7043deb",
-        "version" : "0.1.1"
+        "revision" : "601287a2a89e8e56e8aa53782b6054db8be0bce8",
+        "version" : "0.1.2"
       }
     },
     {
