@@ -476,4 +476,36 @@ extension AndroidBackend: BackendFeatures.Pickers {
             fatalError("Unexpected picker class")
         }
     }
+
+    // MARK: DatePicker
+    public func createDatePicker() -> Widget {
+        CustomDatePicker(activity: Self.activity, environment: Self.env)
+            .as(AndroidKit.View.self)!
+    }
+    
+    public func updateDatePicker(
+        _ datePicker: Widget,
+        environment: EnvironmentValues,
+        date: Date,
+        range: ClosedRange<Date>,
+        components: DatePickerComponents,
+        onChange: @escaping (Date) -> Void
+    ) {
+        let datePicker = datePicker.as(CustomDatePicker.self)!
+        
+        datePicker.update(
+            isEnabled: environment.isEnabled,
+            calendar: CalendarLocale(calendar: environment.calendar, environment: Self.env),
+            selectedDate: CustomDate(date.timeIntervalSince1970, environment: Self.env),
+            minDate: CustomDate(range.lowerBound.timeIntervalSince1970, environment: Self.env),
+            maxDate: CustomDate(range.upperBound.timeIntervalSince1970, environment: Self.env),
+            components: Int64(components.rawValue),
+            onChange: SwiftAction(environment: Self.env) {
+                let unixEpoch = datePicker.getSelectedDate()!.getUnixEpoch()
+                let date = Date(timeIntervalSince1970: unixEpoch)
+                onChange(date)
+            },
+            timeZone: environment.timeZone.identifier
+        )
+    }
 }
