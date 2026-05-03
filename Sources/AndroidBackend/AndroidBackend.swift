@@ -81,13 +81,13 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     //    public typealias Alert = Never
     //    public typealias Path = Never
     //    public typealias Sheet = Never
-    
+
     static let stdoutPipe = Pipe()
     static let stderrPipe = Pipe()
-    
+
     // TODO(stackotter): Dynamically determine the device class
     public let deviceClass = DeviceClass.phone
-    
+
     //    public let defaultTableRowContentHeight = 0
     //    public let defaultTableCellVerticalPadding = 0
     public let defaultPaddingAmount = 10
@@ -99,21 +99,21 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     public let supportsMultipleWindows = false
     public let canOverrideWindowColorScheme = false
     //    public nonisolated let supportedDatePickerStyles: [DatePickerStyle] = [.automatic]
-    
+
     /// A reference used to keep the tickler alive.
     var tickler: MainRunLoopTickler?
-    
+
     /// The JNI environment pointer. Set by ``entrypoint``.
     static var env: UnsafeMutablePointer<JNIEnv?>!
     /// The main activity. Set by ``entrypoint``.
     static var activity: Activity!
-    
+
     var helpers: AndroidBackendHelpers
-    
+
     public init() {
         helpers = AndroidBackendHelpers(environment: Self.env)
     }
-    
+
     public func runMainLoop(
         _ callback: @escaping @MainActor () -> Void
     ) {
@@ -125,47 +125,47 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         // setting up the initial view hierarchy.
         callback()
     }
-    
+
     public func createWindow(withDefaultSize defaultSize: SIMD2<Int>?) -> Window {
         // TODO(stackotter): Properly support multiple calls to createWindow
     }
-    
+
     public func updateWindow(_ window: Window, environment: EnvironmentValues) {
         // TODO(stackotter): Update window theme?
     }
-    
+
     //    public func setCloseHandler(ofWindow window: Window, to action: @escaping () -> Void) {
     //        // TODO(stackotter): Set close handler?
     //    }
-    
+
     public func setTitle(ofWindow window: Window, to title: String) {
         // TODO(stackotter): Handle navigation titles.
     }
-    
+
     public func setResizability(ofWindow window: Window, to resizable: Bool) {}
-    
+
     public func setChild(ofWindow window: Window, to child: Widget) {
         Self.activity.setContentView(child)
     }
-    
+
     public func size(ofWindow window: Window) -> SIMD2<Int> {
         let width = Int(helpers.getWindowWidth(Self.activity))
         let height = Int(helpers.getWindowHeight(Self.activity))
         return SIMD2(Int(width), Int(height))
     }
-    
+
     public func isWindowProgrammaticallyResizable(_ window: Window) -> Bool {
         false
     }
-    
+
     public func setSize(ofWindow window: Window, to newSize: SIMD2<Int>) {
         log("warning: Attempted to set size of Android window")
     }
-    
+
     public func setSizeLimits(ofWindow window: Void, minimum minimumSize: SIMD2<Int>, maximum maximumSize: SIMD2<Int>?) {}
-    
+
     //    public func setBehaviors(ofWindow window: Void, closable: Bool, minimizable: Bool, resizable: Bool) {}
-    
+
     public func setResizeHandler(
         ofWindow window: Window,
         to action: @escaping (_ newSize: SIMD2<Int>) -> Void
@@ -173,13 +173,13 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         // TODO(stackotter): Handle orientation changes and other changes such
         //   as density changes
     }
-    
+
     public func show(window: Window) {
         log("Show window")
     }
-    
+
     public func activate(window: Window) {}
-    
+
     //    public func setApplicationMenu(
     //        _ submenus: [ResolvedMenu.Submenu],
     //        environment: EnvironmentValues
@@ -187,26 +187,26 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     //        // TODO(stackotter): Register app menu items as shortcuts when we support keyboard
     //        //   shortcuts.
     //    }
-    
+
     //    public func setIncomingURLHandler(to action: @escaping (Foundation.URL) -> Void) {
     //        // TODO(stackotter): Handle incoming URLs
     //    }
-    
+
     public func runInMainThread(action: @escaping @MainActor () -> Void) {
         Task { @MainActor in
             action()
         }
     }
-    
+
     public func computeRootEnvironment(defaultEnvironment: EnvironmentValues) -> EnvironmentValues {
         // TODO(stackotter): React to system theme
         defaultEnvironment
     }
-    
+
     public func setRootEnvironmentChangeHandler(to action: @escaping @Sendable @MainActor () -> Void) {
         // TODO(stackotter): Listen for system theme changes
     }
-    
+
     public func computeWindowEnvironment(
         window: Window,
         rootEnvironment: EnvironmentValues
@@ -217,7 +217,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         //   case we may need to handle per-window pixel density.
         rootEnvironment
     }
-    
+
     public func setWindowEnvironmentChangeHandler(
         of window: Window,
         to action: @escaping @Sendable @MainActor () -> Void
@@ -225,24 +225,24 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         // TODO(stackotter): React to per-window environment changes. See
         //   computeWindowEnvironment
     }
-    
+
     public func show(widget: Widget) {}
-    
+
     public func createContainer() -> Widget {
         RelativeLayout(Self.activity, environment: Self.env)
             .as(AndroidKit.View.self)!
     }
-    
+
     public func removeAllChildren(of container: Widget) {
         let container = container.as(ViewGroup.self)!
         container.removeAllViews()
     }
-    
+
     public func insert(_ child: Widget, into container: Widget, at index: Int) {
         let container = container.as(ViewGroup.self)!
         container.addView(child, Int32(index))
     }
-    
+
     public func setPosition(
         ofChildAt index: Int,
         in container: Widget,
@@ -257,12 +257,12 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         
         child.setLayoutParams(layoutParams.as(ViewGroup.LayoutParams.self))
     }
-    
+
     public func remove(childAt index: Int, from container: Widget) {
         let container = container.as(RelativeLayout.self)!
         container.removeViewAt(Int32(index))
     }
-    
+
     public func swap(childAt firstIndex: Int, withChildAt secondIndex: Int, in container: Widget) {
         let container = container.as(ViewGroup.self)!
         let largerIndex = Int32(max(firstIndex, secondIndex))
@@ -274,7 +274,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         container.addView(view2, smallerIndex)
         container.addView(view1, largerIndex)
     }
-    
+
     public func naturalSize(of widget: Widget) -> SIMD2<Int> {
         let measureSpecClass = try! JavaClass<AndroidKit.View.MeasureSpec>(
             environment: Self.env
@@ -287,7 +287,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let height = widget.getMeasuredHeight()
         return SIMD2(Int(width), Int(height))
     }
-    
+
     public func setSize(of widget: Widget, to size: SIMD2<Int>) {
         let layoutParams = widget.getLayoutParams()!
         layoutParams.width = Int32(size.x)
@@ -296,18 +296,18 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         
         // TODO(stackotter): Use density-adaptive units everywhere
     }
-    
+
     public func createButton() -> Widget {
         AndroidKit.Button(Self.activity, environment: Self.env)
             .as(AndroidKit.View.self)!
     }
-    
+
     /// Converts a Swift String to a Java CharSequence.
     private func charSequence(from string: String) -> CharSequence {
         let jstring = JavaString(string, environment: Self.env)
         return jstring.as(CharSequence.self)!
     }
-    
+
     public func updateButton(
         _ button: Widget,
         label: String,
@@ -320,12 +320,12 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let listener = ViewOnClickListener(action: action, environment: Self.env)
         button.setOnClickListener(listener.as(AndroidView.View.OnClickListener.self))
     }
-    
+
     public func createTextField() -> Widget {
         CustomEditText(activity: Self.activity, environment: Self.env)
             .as(AndroidKit.View.self)!
     }
-    
+
     public func updateTextField(
         _ textField: Widget,
         placeholder: String,
@@ -349,22 +349,22 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         )
         textField.setOnSubmit(SwiftAction(environment: Self.env, action: onSubmit))
     }
-    
+
     public func setContent(ofTextField textField: Widget, to content: String) {
         let textField = textField.as(AndroidKit.TextView.self)!
         textField.setText(charSequence(from: content))
     }
-    
+
     public func getContent(ofTextField textField: Widget) -> String {
         let textField = textField.as(AndroidKit.TextView.self)!
         return textField.getText().toString()
     }
-    
+
     public func createTextView() -> Widget {
         AndroidKit.TextView(Self.activity, environment: Self.env)
             .as(AndroidKit.View.self)!
     }
-    
+
     public func updateTextView(
         _ textView: Widget,
         content: String,
@@ -375,7 +375,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         textView.setText(content.as(CharSequence.self))
         // TODO: Handle environment
     }
-    
+
     public func size(
         of text: String,
         whenDisplayedIn widget: Widget,
@@ -403,24 +403,24 @@ extension AndroidBackend: BackendFeatures.Pickers {
 
     public func createPicker(style: BackendPickerStyle) -> Widget {
         switch style {
-        case .radioGroup:
-            return CustomRadioGroup(
-                Self.activity,
-                environment: Self.env
-            ).as(AndroidKit.View.self)!
-        case .menu:
-            return CustomSpinner(
-                Self.activity,
-                environment: Self.env
-            ).as(AndroidKit.View.self)!
-        case .wheel:
-            return CustomNumberPicker(
-                Self.activity,
-                environment: Self.env
-            ).as(AndroidKit.View.self)!
-        default:
-            // TODO(bbrk24): Implement .segmented using MaterialButtonToggleGroup
-            fatalError("Unsupported picker style \(style)")
+            case .radioGroup:
+                return CustomRadioGroup(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            case .menu:
+                return CustomSpinner(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            case .wheel:
+                return CustomNumberPicker(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            default:
+                // TODO(bbrk24): Implement .segmented using MaterialButtonToggleGroup
+                fatalError("Unsupported picker style \(style)")
         }
     }
     
