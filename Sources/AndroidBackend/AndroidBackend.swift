@@ -77,10 +77,10 @@ extension App {
 public final class AndroidBackend: BackendFeatures.BaseStubs {
     public typealias Window = Void
     public typealias Widget = AndroidKit.View
-//    public typealias Menu = Never
-//    public typealias Alert = Never
-//    public typealias Path = Never
-//    public typealias Sheet = Never
+    //    public typealias Menu = Never
+    //    public typealias Alert = Never
+    //    public typealias Path = Never
+    //    public typealias Sheet = Never
 
     static let stdoutPipe = Pipe()
     static let stderrPipe = Pipe()
@@ -88,18 +88,17 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     // TODO(stackotter): Dynamically determine the device class
     public let deviceClass = DeviceClass.phone
 
-//    public let defaultTableRowContentHeight = 0
-//    public let defaultTableCellVerticalPadding = 0
+    //    public let defaultTableRowContentHeight = 0
+    //    public let defaultTableCellVerticalPadding = 0
     public let defaultPaddingAmount = 10
     public let scrollBarWidth = 0
     public let requiresToggleSwitchSpacer = false
     public let defaultToggleStyle = ToggleStyle.checkbox
     public let requiresImageUpdateOnScaleFactorChange = false
-//    public let menuImplementationStyle = MenuImplementationStyle.menuButton
+    //    public let menuImplementationStyle = MenuImplementationStyle.menuButton
     public let supportsMultipleWindows = false
-    public let supportedPickerStyles: [BackendPickerStyle] = []
     public let canOverrideWindowColorScheme = false
-//    public nonisolated let supportedDatePickerStyles: [DatePickerStyle] = [.automatic]
+    //    public nonisolated let supportedDatePickerStyles: [DatePickerStyle] = [.automatic]
 
     /// A reference used to keep the tickler alive.
     var tickler: MainRunLoopTickler?
@@ -121,7 +120,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let tickler = MainRunLoopTickler(environment: Self.env)
         tickler.start()
         self.tickler = tickler
-
+        
         // We just fall through to return control to Java when we're done
         // setting up the initial view hierarchy.
         callback()
@@ -135,9 +134,9 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         // TODO(stackotter): Update window theme?
     }
 
-//    public func setCloseHandler(ofWindow window: Window, to action: @escaping () -> Void) {
-//        // TODO(stackotter): Set close handler?
-//    }
+    //    public func setCloseHandler(ofWindow window: Window, to action: @escaping () -> Void) {
+    //        // TODO(stackotter): Set close handler?
+    //    }
 
     public func setTitle(ofWindow window: Window, to title: String) {
         // TODO(stackotter): Handle navigation titles.
@@ -165,7 +164,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
     public func setSizeLimits(ofWindow window: Void, minimum minimumSize: SIMD2<Int>, maximum maximumSize: SIMD2<Int>?) {}
 
-//    public func setBehaviors(ofWindow window: Void, closable: Bool, minimizable: Bool, resizable: Bool) {}
+    //    public func setBehaviors(ofWindow window: Void, closable: Bool, minimizable: Bool, resizable: Bool) {}
 
     public func setResizeHandler(
         ofWindow window: Window,
@@ -181,17 +180,17 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
     public func activate(window: Window) {}
 
-//    public func setApplicationMenu(
-//        _ submenus: [ResolvedMenu.Submenu],
-//        environment: EnvironmentValues
-//    ) {
-//        // TODO(stackotter): Register app menu items as shortcuts when we support keyboard
-//        //   shortcuts.
-//    }
+    //    public func setApplicationMenu(
+    //        _ submenus: [ResolvedMenu.Submenu],
+    //        environment: EnvironmentValues
+    //    ) {
+    //        // TODO(stackotter): Register app menu items as shortcuts when we support keyboard
+    //        //   shortcuts.
+    //    }
 
-//    public func setIncomingURLHandler(to action: @escaping (Foundation.URL) -> Void) {
-//        // TODO(stackotter): Handle incoming URLs
-//    }
+    //    public func setIncomingURLHandler(to action: @escaping (Foundation.URL) -> Void) {
+    //        // TODO(stackotter): Handle incoming URLs
+    //    }
 
     public func runInMainThread(action: @escaping @MainActor () -> Void) {
         Task { @MainActor in
@@ -251,11 +250,11 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     ) {
         let container = container.as(ViewGroup.self)!
         let child = container.getChildAt(Int32(index))!
-
+        
         let layoutParams = child.getLayoutParams().as(RelativeLayout.LayoutParams.self)!
         layoutParams.leftMargin = Int32(position.x)
         layoutParams.topMargin = Int32(position.y)
-
+        
         child.setLayoutParams(layoutParams.as(ViewGroup.LayoutParams.self))
     }
 
@@ -294,7 +293,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         layoutParams.width = Int32(size.x)
         layoutParams.height = Int32(size.y)
         widget.setLayoutParams(layoutParams)
-
+        
         // TODO(stackotter): Use density-adaptive units everywhere
     }
 
@@ -393,5 +392,88 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let width = widget.getMeasuredWidth()
         let height = widget.getMeasuredHeight()
         return SIMD2(Int(width), Int(height))
+    }
+}
+    
+// MARK: Picker
+extension AndroidBackend: BackendFeatures.Pickers {
+    public var supportedPickerStyles: [BackendPickerStyle] {
+        [.menu, .radioGroup, .wheel]
+    }
+
+    public func createPicker(style: BackendPickerStyle) -> Widget {
+        switch style {
+            case .radioGroup:
+                return CustomRadioGroup(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            case .menu:
+                return CustomSpinner(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            case .wheel:
+                return CustomNumberPicker(
+                    Self.activity,
+                    environment: Self.env
+                ).as(AndroidKit.View.self)!
+            default:
+                // TODO(bbrk24): Implement .segmented using MaterialButtonToggleGroup
+                fatalError("Unsupported picker style \(style)")
+        }
+    }
+    
+    public func updatePicker(
+        _ picker: Widget,
+        options: [String],
+        environment: EnvironmentValues,
+        onChange: @escaping (Int?) -> Void
+    ) {
+        if let picker = picker.as(CustomRadioGroup.self) {
+            let action = SwiftAction(environment: Self.env) {
+                let selectedOption = picker.getSelectedOption()
+                onChange(selectedOption < 0 ? nil : Int(selectedOption))
+            }
+            picker.update(action, options, environment.isEnabled)
+        } else if let picker = picker.as(CustomSpinner.self) {
+            let action = SwiftAction(environment: Self.env) {
+                let selectedOption = picker.getSelectedItemPosition()
+                let invalidPosition: Int32 = try! JavaClass<AndroidKit.AdapterView>().INVALID_POSITION
+                
+                onChange(selectedOption == invalidPosition ? nil : Int(selectedOption))
+            }
+            picker.update(action, options, environment.isEnabled)
+        } else if let picker = picker.as(CustomNumberPicker.self) {
+            let action = SwiftAction(environment: Self.env) {
+                let selectedOption = picker.getValue()
+                onChange(selectedOption == 0 ? nil : Int(selectedOption - 1))
+            }
+            picker.update(action, options, environment.isEnabled)
+        } else {
+            fatalError("Unexpected picker class")
+        }
+    }
+    
+    public func setSelectedOption(ofPicker picker: Widget, to selectedOption: Int?) {
+        if let picker = picker.as(CustomRadioGroup.self) {
+            picker.selectOption(Int32(selectedOption ?? -1))
+        } else if let picker = picker.as(CustomSpinner.self) {
+            if let selectedOption {
+                picker.selectOption(Int32(selectedOption))
+            } else {
+                let invalidPosition: Int32 = try! JavaClass<AndroidKit.AdapterView>().INVALID_POSITION
+                
+                picker.selectOption(invalidPosition)
+            }
+        } else if let picker = picker.as(AndroidKit.NumberPicker.self) {
+            if let selectedOption {
+                picker.setValue(Int32(selectedOption + 1))
+            } else {
+                picker.setValue(0)
+            }
+        } else {
+            fatalError("Unexpected picker class")
+        }
     }
 }
