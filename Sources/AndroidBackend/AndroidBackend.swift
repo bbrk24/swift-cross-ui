@@ -98,7 +98,6 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     //    public let menuImplementationStyle = MenuImplementationStyle.menuButton
     public let supportsMultipleWindows = false
     public let canOverrideWindowColorScheme = false
-    //    public nonisolated let supportedDatePickerStyles: [DatePickerStyle] = [.automatic]
     
     /// A reference used to keep the tickler alive.
     var tickler: MainRunLoopTickler?
@@ -400,7 +399,7 @@ extension AndroidBackend: BackendFeatures.Pickers {
     public var supportedPickerStyles: [BackendPickerStyle] {
         [.menu, .radioGroup, .wheel]
     }
-
+    
     public func createPicker(style: BackendPickerStyle) -> Widget {
         switch style {
         case .radioGroup:
@@ -476,8 +475,14 @@ extension AndroidBackend: BackendFeatures.Pickers {
             fatalError("Unexpected picker class")
         }
     }
+}
 
-    // MARK: DatePicker
+// MARK: DatePicker
+extension AndroidBackend: BackendFeatures.DatePickers {
+    public nonisolated var supportedDatePickerStyles: [DatePickerStyle] {
+        [.automatic, .graphical]
+    }
+    
     public func createDatePicker() -> Widget {
         CustomDatePicker(activity: Self.activity, environment: Self.env)
             .as(AndroidKit.View.self)!
