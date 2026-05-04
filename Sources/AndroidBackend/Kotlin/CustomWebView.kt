@@ -22,6 +22,8 @@ class CustomWebView(activity: Activity): WebView(activity) {
                 return false
             }
         }
+
+        settings.javaScriptEnabled = true
     }
     
     override fun loadUrl(url: String) {
