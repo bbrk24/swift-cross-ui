@@ -550,7 +550,7 @@ extension AndroidBackend: BackendFeatures.Alerts {
         alert.show(Self.activity)
     }
     
-    public func dismissAlert(_ alert: AlertFragment, window: Void?) {
+    public func dismissAlert(_ alert: AlertFragment, window: Window?) {
         alert.dismiss()
     }
 }
