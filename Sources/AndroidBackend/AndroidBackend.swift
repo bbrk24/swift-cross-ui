@@ -75,11 +75,11 @@ extension App {
 // TODO: Implement the rest of `BaseAppBackend` so we can move off of `BaseStubs`
 
 public final class AndroidBackend: BackendFeatures.BaseStubs {
-    public typealias Window = Void
+    public final class Window {
+        var content: Widget?
+    }
+
     public typealias Widget = AndroidKit.View
-    //    public typealias Menu = Never
-    //    public typealias Path = Never
-    //    public typealias Sheet = Never
 
     static let stdoutPipe = Pipe()
     static let stderrPipe = Pipe()
@@ -87,17 +87,11 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     // TODO(stackotter): Dynamically determine the device class
     public let deviceClass = DeviceClass.phone
 
-    //    public let defaultTableRowContentHeight = 0
-    //    public let defaultTableCellVerticalPadding = 0
     public let defaultPaddingAmount = 10
     public let scrollBarWidth = 0
-    public let requiresToggleSwitchSpacer = false
-    public let defaultToggleStyle = ToggleStyle.checkbox
     public let requiresImageUpdateOnScaleFactorChange = false
-    //    public let menuImplementationStyle = MenuImplementationStyle.menuButton
     public let supportsMultipleWindows = false
     public let canOverrideWindowColorScheme = false
-    //    public nonisolated let supportedDatePickerStyles: [DatePickerStyle] = [.automatic]
 
     /// A reference used to keep the tickler alive.
     var tickler: MainRunLoopTickler?
@@ -127,10 +121,20 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
     public func createWindow(withDefaultSize defaultSize: SIMD2<Int>?) -> Window {
         // TODO(stackotter): Properly support multiple calls to createWindow
+        return Window()
     }
 
     public func updateWindow(_ window: Window, environment: EnvironmentValues) {
         // TODO(stackotter): Update window theme?
+        updateInsets(ofWindow: window)
+    }
+
+    public func setSizeLimits(
+        ofWindow window: Window,
+        minimum: SIMD2<Int>,
+        maximum: SIMD2<Int>?
+    ) {
+        // Doesn't mean anything on Android until we support split screen
     }
 
     //    public func setCloseHandler(ofWindow window: Window, to action: @escaping () -> Void) {
@@ -144,7 +148,22 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     public func setResizability(ofWindow window: Window, to resizable: Bool) {}
 
     public func setChild(ofWindow window: Window, to child: Widget) {
-        Self.activity.setContentView(child)
+        let container = createContainer()
+        insert(child, into: container, at: 0)
+        Self.activity.setContentView(container)
+        window.content = container
+        updateInsets(ofWindow: window)
+    }
+
+    private func updateInsets(ofWindow window: Window) {
+        guard let container = window.content else {
+            logger.warning("Attempted to update insets of window without content")
+            return
+        }
+
+        let leftInset = Int(helpers.getSafeAreaLeftInset(Self.activity))
+        let topInset = Int(helpers.getSafeAreaTopInset(Self.activity))
+        setPosition(ofChildAt: 0, in: container, to: SIMD2(leftInset, topInset))
     }
 
     public func size(ofWindow window: Window) -> SIMD2<Int> {
@@ -393,8 +412,32 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         return SIMD2(Int(width), Int(height))
     }
 }
+
+extension AndroidBackend: BackendFeatures.WebViews {
+    public func createWebView() -> Widget {
+        CustomWebView(Self.activity, environment: Self.env).as(AndroidKit.View.self)!
+    }
     
-// MARK: Picker
+    public func updateWebView(
+        _ webView: Widget,
+        environment: EnvironmentValues,
+        onNavigate: @escaping (URL) -> Void
+    ) {
+        let webView = webView.as(CustomWebView.self)!
+        webView.setOnNavigate(SwiftAction(environment: Self.env) {
+            if let javaString = webView.getLoadingUrl(),
+               let url = URL(string: javaString.toString()) {
+                onNavigate(url)
+            }
+        })
+    }
+    
+    public func navigateWebView(_ webView: Widget, to url: URL) {
+        let webView = webView.as(CustomWebView.self)!
+        webView.loadUrl(url.absoluteString)
+    }
+}
+
 extension AndroidBackend: BackendFeatures.Pickers {
     public var supportedPickerStyles: [BackendPickerStyle] {
         [.menu, .radioGroup, .wheel]
@@ -477,7 +520,6 @@ extension AndroidBackend: BackendFeatures.Pickers {
     }
 }
 
-// MARK: Alert
 extension AndroidBackend: BackendFeatures.Alerts {
     public typealias Alert = AlertFragment
     
@@ -510,5 +552,95 @@ extension AndroidBackend: BackendFeatures.Alerts {
     
     public func dismissAlert(_ alert: AlertFragment, window: Void?) {
         alert.dismiss()
+    }
+}
+      
+extension AndroidBackend: BackendFeatures.ToggleButtons, BackendFeatures.Checkboxes, BackendFeatures.Switches {
+    public var requiresToggleSwitchSpacer: Bool { false }
+
+    public func createToggle() -> Widget {
+        AndroidKit.ToggleButton(
+            Self.activity,
+            environment: Self.env
+        )
+    }
+
+    public func createCheckbox() -> Widget {
+        AndroidKit.CheckBox(
+            Self.activity,
+            environment: Self.env
+        )
+    }
+
+    public func createSwitch() -> Widget {
+        AndroidKit.Switch(
+            Self.activity,
+            environment: Self.env
+        )
+    }
+
+    private func updateCompoundButton(
+        _ button: AndroidKit.CompoundButton,
+        environment: EnvironmentValues,
+        onChange: @escaping (Bool) -> Void
+    ) {
+        button.setEnabled(environment.isEnabled)
+
+        let action = SwiftAction(environment: Self.env) {
+            let checked = button.isChecked()
+            onChange(checked)
+        }
+        let listener = CustomOnCheckedChangeListener(action, environment: Self.env)
+
+        button.setOnCheckedChangeListener(
+            listener.as(AndroidKit.CompoundButton.OnCheckedChangeListener.self)!
+        )
+    }
+
+    public func updateToggle(
+        _ toggle: Widget,
+        label: String,
+        environment: EnvironmentValues,
+        onChange: @escaping (Bool) -> Void
+    ) {
+        let toggle = toggle.as(AndroidKit.ToggleButton.self)!
+        updateCompoundButton(toggle, environment: environment, onChange: onChange)
+
+        let charSequence = charSequence(from: label)
+        toggle.setTextOn(charSequence)
+        toggle.setTextOff(charSequence)
+    }
+
+    public func updateCheckbox(
+        _ checkboxWidget: Widget,
+        environment: EnvironmentValues,
+        onChange: @escaping (Bool) -> Void
+    ) {
+        let checkboxWidget = checkboxWidget.as(AndroidKit.CompoundButton.self)!
+        updateCompoundButton(checkboxWidget, environment: environment, onChange: onChange)
+    }
+
+    public func updateSwitch(
+        _ switchWidget: Widget,
+        environment: EnvironmentValues,
+        onChange: @escaping (Bool) -> Void
+    ) {
+        let switchWidget = switchWidget.as(AndroidKit.CompoundButton.self)!
+        updateCompoundButton(switchWidget, environment: environment, onChange: onChange)
+    }
+
+    public func setState(ofToggle toggle: Widget, to state: Bool) {
+        let toggle = toggle.as(AndroidKit.CompoundButton.self)!
+        toggle.setChecked(state)
+    }
+
+    public func setState(ofCheckbox checkboxWidget: Widget, to state: Bool) {
+        let checkboxWidget = checkboxWidget.as(AndroidKit.CompoundButton.self)!
+        checkboxWidget.setChecked(state)
+    }
+
+    public func setState(ofSwitch switchWidget: Widget, to state: Bool) {
+        let switchWidget = switchWidget.as(AndroidKit.CompoundButton.self)!
+        switchWidget.setChecked(state)
     }
 }
