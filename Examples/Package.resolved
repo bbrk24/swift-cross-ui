@@ -103,7 +103,7 @@
     {
       "identity" : "pathkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kylef/PathKit",
+      "location" : "https://github.com/kylef/PathKit.git",
       "state" : {
         "revision" : "3bfd2737b700b9a36565a8c94f4ad2b050a5e574",
         "version" : "1.0.1"
@@ -139,7 +139,7 @@
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-argument-parser",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
         "revision" : "626b5b7b2f45e1b0b1c6f4a309296d1d21d7311b",
         "version" : "1.7.1"
@@ -185,14 +185,14 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-certificates",
       "state" : {
-        "revision" : "5aa1c0d1bc204908df47c2075bdbb39573d05e8d",
-        "version" : "1.19.0"
+        "revision" : "bde8ca32a096825dfce37467137c903418c1893d",
+        "version" : "1.19.1"
       }
     },
     {
       "identity" : "swift-collections",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-collections",
+      "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
         "revision" : "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
         "version" : "1.3.0"
@@ -219,7 +219,7 @@
     {
       "identity" : "swift-filestreamer",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sersoft-gmbh/swift-filestreamer.git",
+      "location" : "https://github.com/sersoft-gmbh/swift-filestreamer",
       "state" : {
         "revision" : "b01ff214cc629718a8729f33d2a8b88e47532dbd",
         "version" : "0.6.0"
@@ -275,8 +275,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "ce592ae52f982c847a4efc0dd881cc9eb32d29f2",
-        "version" : "1.6.4"
+        "revision" : "5073617dac96330a486245e4c0179cb0a6fd2256",
+        "version" : "1.12.0"
       }
     },
     {
@@ -374,8 +374,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-windowsappsdk",
       "state" : {
-        "revision" : "3c06cb36da9711e24a76c35861e0b97702448015",
-        "version" : "0.1.1"
+        "revision" : "40d2db0c4cfadf557b9ce60a0ce1c5c96defc438",
+        "version" : "0.1.2"
       }
     },
     {
@@ -437,8 +437,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mxcl/Version",
       "state" : {
-        "revision" : "67ce582bb9de70e1eb2ee41fd71aad3b5f86d97b",
-        "version" : "2.2.0"
+        "revision" : "3043fcd2a50375db76d89ff206a612471833d1c2",
+        "version" : "2.2.1"
       }
     },
     {
