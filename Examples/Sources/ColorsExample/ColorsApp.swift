@@ -60,12 +60,10 @@ struct ColorsApp: App {
                     
                     #if canImport(AndroidBackend)
                         // TODO(bbrk24): Update this once AndroidBackend supports scrolling
-                        HStack {
-                            VStack(spacing: 5) {
-                                colorStack.colorScheme(.dark)
-                                colorStack.colorScheme(.light)
-                                colorStack
-                            }
+                        VStack(spacing: 5) {
+                            colorStack.colorScheme(.dark)
+                            colorStack.colorScheme(.light)
+                            colorStack
                         }
                     #else
                         ScrollView(.horizontal) {
