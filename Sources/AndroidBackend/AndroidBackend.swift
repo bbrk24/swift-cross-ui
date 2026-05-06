@@ -646,3 +646,76 @@ extension AndroidBackend: BackendFeatures.ToggleButtons, BackendFeatures.Checkbo
         switchWidget.setChecked(state)
     }
 }
+
+extension AndroidBackend: BackendFeatures.Colors {
+    public func createColorableRectangle() -> Widget {
+        AndroidKit.View(Self.activity, environment: Self.env)
+    }
+
+    private func toColorInt(_ color: SwiftCrossUI.Color.Resolved) -> Int32 {
+        // https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/graphics/java/android/graphics/Color.java;drc=ba44b0b3545f60e2b82e864ea0e684ce7407349a;l=1338
+        let alpha = UInt32(color.opacity * 255.0 + 0.5)
+        let red = UInt32(color.red * 255.0 + 0.5)
+        let green = UInt32(color.green * 255.0 + 0.5)
+        let blue = UInt32(color.blue * 255.0 + 0.5)
+
+        let combined = (alpha << 24) | (red << 16) | (green << 8) | blue
+
+        return Int32(bitPattern: combined)
+    }
+    
+    private func toResolvedColor(_ int: Int32) -> SwiftCrossUI.Color.Resolved {
+        // inverse of the above
+        let uint = UInt32(bitPattern: int)
+
+        let alpha = (Float(uint >> 24) - 0.5) / 255.0
+        let red = (Float((uint & 0x00FF0000) >> 16) - 0.5) / 255.0
+        let green = (Float((uint & 0x0000FF00) >> 8) - 0.5) / 255.0
+        let blue = (Float(uint & 0x000000FF) - 0.5) / 255.0
+
+        return .init(
+            red: red,
+            green: green,
+            blue: blue,
+            opacity: alpha
+        )
+    }
+    
+    public func setColor(
+        ofColorableRectangle widget: Widget,
+        to color: SwiftCrossUI.Color.Resolved
+    ) {
+        widget.setBackgroundColor(toColorInt(color))
+    }
+    
+    public func resolveAdaptiveColor(
+        _ adaptiveColor: SwiftCrossUI.Color.SystemAdaptive,
+        in environment: EnvironmentValues
+    ) -> SwiftCrossUI.Color.Resolved {
+        let Rcolor = try! JavaClass<AndroidKit.R.color>()
+
+        let resId: Int32? =
+            switch (adaptiveColor, environment.colorScheme) {
+                case (.blue, .light): Rcolor.holo_blue_dark
+                case (.blue, .dark): Rcolor.holo_blue_light
+                case (.gray, _): Rcolor.darker_gray
+                case (.green, .light): Rcolor.holo_green_dark
+                case (.green, .dark): Rcolor.holo_green_light
+                case (.orange, .light): Rcolor.holo_orange_dark
+                case (.orange, .dark): Rcolor.holo_orange_light
+                case (.red, .light): Rcolor.holo_red_dark
+                case (.red, .dark): Rcolor.holo_red_light
+                case (.purple, _): Rcolor.holo_purple
+                default: // brown, yellow
+                    nil
+            }
+        
+        guard let resId else {
+            return SwiftCrossUI.Color.defaultResolveAdaptiveColor(adaptiveColor, in: environment)
+        }
+        
+        let colorInt = Self.activity.getColor(resId)
+        
+        return toResolvedColor(colorInt)
+    }
+}

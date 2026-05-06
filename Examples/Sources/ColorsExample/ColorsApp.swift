@@ -57,14 +57,25 @@ struct ColorsApp: App {
                         otherwise SCUI's built-in colors will be shown
                         """
                     )
-
-                    ScrollView(.horizontal) {
-                        VStack(spacing: 5) {
-                            colorStack.colorScheme(.dark)
-                            colorStack.colorScheme(.light)
-                            colorStack
+                    
+                    #if canImport(AndroidBackend)
+                        // TODO(bbrk24): Update this once AndroidBackend supports scrolling
+                        HStack {
+                            VStack(spacing: 5) {
+                                colorStack.colorScheme(.dark)
+                                colorStack.colorScheme(.light)
+                                colorStack
+                            }
                         }
-                    }
+                    #else
+                        ScrollView(.horizontal) {
+                            VStack(spacing: 5) {
+                                colorStack.colorScheme(.dark)
+                                colorStack.colorScheme(.light)
+                                colorStack
+                            }
+                        }
+                    #endif
                 }
                 .padding()
             }
