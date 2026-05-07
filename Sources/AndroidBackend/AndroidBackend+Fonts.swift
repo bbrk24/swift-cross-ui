@@ -7,6 +7,7 @@ extension AndroidKit.TextView {
     func setTypeface(_ tf: AndroidKit.Typeface?)
 }
 
+// swiftlint:disable force_try
 extension AndroidBackend {
     struct TextStyle {
         var color: Int32
