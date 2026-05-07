@@ -219,8 +219,18 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     }
 
     public func computeRootEnvironment(defaultEnvironment: EnvironmentValues) -> EnvironmentValues {
-        // TODO(stackotter): React to system theme
-        defaultEnvironment
+        var environment = defaultEnvironment
+
+        if helpers.isNightMode(Self.activity) {
+            environment.colorScheme = .dark
+        } else {
+            environment.colorScheme = .light
+        }
+        
+        // TODO(bbrk24): Properly detect time zone and calendar, since
+        // `.current` is broken on Android.
+        
+        return environment
     }
 
     public func setRootEnvironmentChangeHandler(to action: @escaping @Sendable @MainActor () -> Void) {

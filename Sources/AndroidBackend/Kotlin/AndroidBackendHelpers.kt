@@ -2,6 +2,7 @@ package dev.swiftcrossui.androidbackend
 
 import android.R
 import android.app.Activity
+import android.content.res.Configuration
 import android.text.TextUtils
 import android.view.WindowInsets
 import android.widget.TextView
@@ -72,5 +73,17 @@ class AndroidBackendHelpers {
         val size = smallTextSize ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Small)
         smallTextSize = size
         return size
+    }
+    
+    fun isNightMode(activity: Activity): Boolean {
+        var uiModeNight =
+            activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        
+        if (uiModeNight == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+            uiModeNight =
+                activity.applicationContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        }
+        
+        return uiModeNight == Configuration.UI_MODE_NIGHT_YES
     }
 }

@@ -61,7 +61,11 @@ extension AndroidBackend {
         )
     }
 
-    public func resolveTextStyle(_ textStyle: SwiftCrossUI.Font.TextStyle) -> SwiftCrossUI.Font.TextStyle.Resolved {
+    public func resolveTextStyle(
+        _ textStyle: SwiftCrossUI.Font.TextStyle
+    ) -> SwiftCrossUI.Font.TextStyle.Resolved {
+        // Android seems to only have four distinct built-in font sizes. These ratios were chosen
+        // to more closely match iOS while still respecting system font size preferences.
         let textSize =
             switch textStyle {
                 case .largeTitle: helpers.getLargeTextSize(Self.activity) * 1.53
@@ -76,13 +80,18 @@ extension AndroidBackend {
                 case .caption2: helpers.getSmallTextSize(Self.activity) * 0.846
                 case .footnote: helpers.getSmallTextSize(Self.activity)
             }
+        
+        // Android's default system styles all seem to have line height = font size, which doesn't
+        // match any other platform and can be a bit cramped. The 1.15 here is somewhat arbitrary
+        // but makes it match other platforms a bit more closely.
+        let lineHeight = Double(textSize) * 1.15
 
         // TODO(bbrk24): Update this once everything else uses dp
         return SwiftCrossUI.Font.TextStyle.Resolved(
             pointSize: Double(textSize),
             weight: textStyle == .headline ? .semibold : .regular,
             emphasizedWeight: .semibold,
-            lineHeight: Double(textSize) * 1.15
+            lineHeight: lineHeight
         )
     }
 }
