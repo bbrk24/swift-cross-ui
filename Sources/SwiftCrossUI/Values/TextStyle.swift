@@ -50,6 +50,7 @@ extension Font.TextStyle {
             lineHeight: 16
         )
 
+        /// Creates a resolved text style.
         public init(
             pointSize: Double,
             weight: Font.Weight = .regular,
