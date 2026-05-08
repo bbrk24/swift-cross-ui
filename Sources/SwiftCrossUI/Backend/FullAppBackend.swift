@@ -41,6 +41,7 @@ public typealias FullAppBackend =
     & BackendFeatures.Colors
     & BackendFeatures.DatePickers
     & BackendFeatures.Windowing
+    & BackendFeatures.Gradients
 
 /// A typealias for ``FullAppBackend``.
 ///

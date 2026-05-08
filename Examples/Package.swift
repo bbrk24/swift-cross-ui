@@ -104,6 +104,10 @@ let package = Package(
             dependencies: exampleDependencies
         ),
         .executableTarget(
+            name: "GradientsExample",
+            dependencies: exampleDependencies
+        ),
+        .executableTarget(
             name: "MusicPlayerExample",
             dependencies: [
                 .product(name: "MiniAudio", package: "swift-miniaudio")
