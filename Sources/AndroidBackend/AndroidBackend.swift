@@ -91,7 +91,7 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             case 2: .tablet
             case 3: .tv
             case 4: .watch
-            default: fatalError()
+            case let x: fatalError("helpers.getDeviceClass returned unexpected value \(x)")
         }
 
     public let defaultPaddingAmount = 10

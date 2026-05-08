@@ -98,7 +98,7 @@ class AndroidBackendHelpers {
     fun getDeviceClass(activity: Activity): Short {
         // Code from the official Android compatibility test suite.
         // https://stackoverflow.com/a/69564916
-        val pm = context.packageManager
+        val pm = activity.packageManager
         if (pm.hasSystemFeature("org.chromium.arc") || pm.hasSystemFeature("org.chromium.arc.device_management"))
             return DEVICE_CLASS_DESKTOP
 
