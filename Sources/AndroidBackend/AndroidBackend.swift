@@ -84,8 +84,15 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     static let stdoutPipe = Pipe()
     static let stderrPipe = Pipe()
 
-    // TODO(stackotter): Dynamically determine the device class
-    public let deviceClass = DeviceClass.phone
+    public lazy var deviceClass: DeviceClass =
+        switch helpers.getDeviceClass(Self.activity) {
+            case 0: .desktop
+            case 1: .phone
+            case 2: .tablet
+            case 3: .tv
+            case 4: .watch
+            default: fatalError()
+        }
 
     public let defaultPaddingAmount = 10
     public let scrollBarWidth = 0
@@ -227,6 +234,11 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             environment.colorScheme = .light
         }
         
+        environment.isCircularScreen = Self.activity
+            .getResources()
+            .getConfiguration()
+            .isScreenRound()
+
         // TODO(bbrk24): Properly detect time zone and calendar, since
         // `.current` is broken on Android.
         

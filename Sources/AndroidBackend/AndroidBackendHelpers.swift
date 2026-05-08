@@ -38,4 +38,7 @@ class AndroidBackendHelpers: JavaObject {
     
     @JavaMethod
     func isNightMode(_ activity: Activity?) -> Bool
+
+    @JavaMethod
+    func getDeviceClass(_ activity: Activity?) -> Int16
 }

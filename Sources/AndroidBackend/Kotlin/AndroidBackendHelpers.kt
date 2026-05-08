@@ -8,6 +8,14 @@ import android.view.WindowInsets
 import android.widget.TextView
 
 class AndroidBackendHelpers {
+    companion object {
+        private const val DEVICE_CLASS_DESKTOP: Short = 0
+        private const val DEVICE_CLASS_PHONE: Short = 1
+        private const val DEVICE_CLASS_TABLET: Short = 2
+        private const val DEVICE_CLASS_TV: Short = 3
+        private const val DEVICE_CLASS_WATCH: Short = 4
+    }
+
     fun getWindowWidth(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val insets = windowMetrics.getWindowInsets()
@@ -85,5 +93,37 @@ class AndroidBackendHelpers {
         }
         
         return uiModeNight == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    fun getDeviceClass(activity: Activity): Short {
+        // Code from the official Android compatibility test suite.
+        // https://stackoverflow.com/a/69564916
+        val pm = context.packageManager
+        if (pm.hasSystemFeature("org.chromium.arc") || pm.hasSystemFeature("org.chromium.arc.device_management"))
+            return DEVICE_CLASS_DESKTOP
+
+        val configuration = activity.resources.configuration
+        val uiModeType = configuration.uiMode and Configuration.UI_MODE_TYPE_MASK
+
+        return when (uiModeType) {
+            Configuration.UI_MODE_TYPE_CAR,
+            Configuration.UI_MODE_TYPE_VR_HEADSET -> DEVICE_CLASS_TABLET
+
+            Configuration.UI_MODE_TYPE_TELEVISION -> DEVICE_CLASS_TV
+
+            Configuration.UI_MODE_TYPE_WATCH -> DEVICE_CLASS_WATCH
+
+            else -> {
+                val sw = configuration.smallestScreenWidthDp
+
+                val isTablet =
+                    if (sw == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED)
+                        configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_XLARGE)
+                    else
+                        sw >= 600
+
+                if (isTablet) DEVICE_CLASS_TABLET else DEVICE_CLASS_PHONE
+            }
+        }
     }
 }
