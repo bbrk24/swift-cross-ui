@@ -440,6 +440,9 @@ extension EnvironmentValues {
     public var lineLimit: Int? {
         lineLimitSettings?.limit
     }
+
+    /// Whether the current device has a circular screen. Primarily Android smart watches.
+    @Entry public var isCircularScreen: Bool = false
 }
 
 /// A key that can be used to extend the environment with new properties.

@@ -6,6 +6,7 @@ public struct DeviceClass: Hashable, Sendable {
         case phone
         case tablet
         case tv
+        case watch
     }
 
     package var kind: Kind
@@ -18,4 +19,6 @@ public struct DeviceClass: Hashable, Sendable {
     public static let tablet = Self(kind: .tablet)
     /// The device class for smart TVs (e.g. Apple TVs).
     public static let tv = Self(kind: .tv)
+    /// The device class for smart watches.
+    public static let watch = Self(kind: .watch)
 }
