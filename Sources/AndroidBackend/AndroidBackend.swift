@@ -250,8 +250,14 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             .getConfiguration()
             .isScreenRound()
 
-        // TODO(bbrk24): Properly detect time zone and calendar, since
-        // `.current` is broken on Android.
+        if let identifier = helpers.getTimeZoneIdentifier()?.toString(),
+           let timeZone = Foundation.TimeZone(identifier: identifier)
+        {
+            environment.timeZone = timeZone
+            environment.calendar = getCurrentCalendar(timeZone: timeZone)
+        } else {
+            environment.calendar = getCurrentCalendar(timeZone: nil)
+        }
 
         return environment
     }

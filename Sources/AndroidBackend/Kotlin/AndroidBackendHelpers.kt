@@ -3,7 +3,9 @@ package dev.swiftcrossui.androidbackend
 import android.R
 import android.app.Activity
 import android.content.res.Configuration
+import android.icu.util.TimeZone
 import android.os.Build
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
@@ -182,6 +184,21 @@ class AndroidBackendHelpers {
 
                 if (isTablet) DEVICE_CLASS_TABLET else DEVICE_CLASS_PHONE
             }
+        }
+    }
+
+    fun getTimeZoneIdentifier(): String? {
+        val tz = TimeZone.getDefault()
+
+        // getCanonicalID uses outdated information. In Android 16, instead of updating it, they
+        // added a whole new method that uses up-to-date information. The new method returns
+        // TimeZone.UNKNOWN_ZONE_ID on error; the old method returns null on error.
+        if (Build.VERSION.SDK_INT >= 36) {
+            val id = TimeZone.getIanaID(tz.getID())
+
+            return if (id == TimeZone.UNKNOWN_ZONE_ID) null else id
+        } else {
+            return TimeZone.getCanonicalID(tz.getID())
         }
     }
 }
