@@ -856,18 +856,18 @@ extension AndroidBackend: BackendFeatures.Paths {
         // Even though fillPaint doesn't render a line, the stroke join can still affect the shape
         // of the fill.
         switch strokeStyle.join {
-        case .miter(let limit):
-            path.strokePaint.setStrokeJoin(joinClass.MITER)
-            path.strokePaint.setStrokeMiter(Float(limit))
+            case .miter(let limit):
+                path.strokePaint.setStrokeJoin(joinClass.MITER)
+                path.strokePaint.setStrokeMiter(Float(limit))
 
-            path.fillPaint.setStrokeJoin(joinClass.MITER)
-            path.fillPaint.setStrokeMiter(Float(limit))
-        case .bevel:
-            path.strokePaint.setStrokeJoin(joinClass.BEVEL)
-            path.fillPaint.setStrokeJoin(joinClass.BEVEL)
-        case .round:
-            path.strokePaint.setStrokeJoin(joinClass.ROUND)
-            path.fillPaint.setStrokeJoin(joinClass.ROUND)
+                path.fillPaint.setStrokeJoin(joinClass.MITER)
+                path.fillPaint.setStrokeMiter(Float(limit))
+            case .bevel:
+                path.strokePaint.setStrokeJoin(joinClass.BEVEL)
+                path.fillPaint.setStrokeJoin(joinClass.BEVEL)
+            case .round:
+                path.strokePaint.setStrokeJoin(joinClass.ROUND)
+                path.fillPaint.setStrokeJoin(joinClass.ROUND)
         }
     }
 
