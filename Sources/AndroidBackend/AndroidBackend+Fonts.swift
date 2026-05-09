@@ -11,7 +11,7 @@ extension AndroidKit.TextView {
 extension AndroidBackend {
     struct TextStyle {
         var color: Int32
-        var fontSizePixels: Float
+        var fontSize: Float
         var lineHeightPixels: Int32
         var typeface: AndroidKit.Typeface
 
@@ -20,7 +20,7 @@ extension AndroidBackend {
 
             textView.setTypeface(typeface)
             textView.setTextColor(color)
-            textView.setTextSize(typedValue.COMPLEX_UNIT_PX, fontSizePixels)
+            textView.setTextSize(typedValue.COMPLEX_UNIT_SP, fontSize)
             textView.setLineHeight(lineHeightPixels)
         }
     }
@@ -52,11 +52,21 @@ extension AndroidBackend {
         let typeface = typefaceClass.create(baseTypeface, weightInt, resolvedFont.isItalic)!
 
         let colorInt = environment.suggestedForegroundColor.resolve(in: environment).asColorInt()
+        
+        let typedValue = try! JavaClass<AndroidKit.TypedValue>()
+        
+        let lineHeightPixels = Int32(
+            typedValue.applyDimension(
+                typedValue.COMPLEX_UNIT_SP,
+                Float(resolvedFont.lineHeight),
+                Self.activity.getResources().getDisplayMetrics()
+            )
+        )
 
         return TextStyle(
             color: colorInt,
-            fontSizePixels: Float(resolvedFont.pointSize),
-            lineHeightPixels: Int32(resolvedFont.lineHeight),
+            fontSize: Float(resolvedFont.pointSize),
+            lineHeightPixels: lineHeightPixels,
             typeface: typeface
         )
     }

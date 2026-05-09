@@ -255,11 +255,9 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         window: Window,
         rootEnvironment: EnvironmentValues
     ) -> EnvironmentValues {
-        // TODO(stackotter): Figure out if we'll ever need window-specific environment
-        //   changes. Probably don't unless Android apps can support
-        //   multi-windowing when external displays are connected, in which
-        //   case we may need to handle per-window pixel density.
-        rootEnvironment
+        var environment = rootEnvironment
+        environment.windowScaleFactor = Double(window.content!.getResources().getDisplayMetrics().density)
+        return environment
     }
 
     public func setWindowEnvironmentChangeHandler(
@@ -292,12 +290,14 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         in container: Widget,
         to position: SIMD2<Int>
     ) {
+        let density = container.getResources().getDisplayMetrics().density
+        
         let container = container.as(CustomContainer.self)!
         let child = container.getChildAt(Int32(index))!
         
         let layoutParams = child.getLayoutParams().as(CustomContainer.LayoutParams.self)!
-        layoutParams.setX(Int32(position.x))
-        layoutParams.setY(Int32(position.y))
+        layoutParams.setX(Int32(Float(position.x) * density))
+        layoutParams.setY(Int32(Float(position.y) * density))
         
         child.setLayoutParams(layoutParams.as(ViewGroup.LayoutParams.self))
     }
@@ -320,6 +320,8 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     }
 
     public func naturalSize(of widget: Widget) -> SIMD2<Int> {
+        let density = widget.getResources().getDisplayMetrics().density
+        
         let measureSpecClass = try! JavaClass<AndroidKit.View.MeasureSpec>(
             environment: Self.env
         )
@@ -327,15 +329,16 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             measureSpecClass.UNSPECIFIED,
             measureSpecClass.UNSPECIFIED
         )
-        let width = widget.getMeasuredWidth()
-        let height = widget.getMeasuredHeight()
-        return SIMD2(Int(width), Int(height))
+        let width = Float(widget.getMeasuredWidth()) / density
+        let height = Float(widget.getMeasuredHeight()) / density
+        return SIMD2(Int(width.rounded(.up)), Int(height.rounded(.up)))
     }
 
     public func setSize(of widget: Widget, to size: SIMD2<Int>) {
+        let density = widget.getResources().getDisplayMetrics().density
         let layoutParams = widget.getLayoutParams()!
-        layoutParams.width = Int32(size.x)
-        layoutParams.height = Int32(size.y)
+        layoutParams.width = Int32(Float(size.x) * density)
+        layoutParams.height = Int32(Float(size.y) * density)
         widget.setLayoutParams(layoutParams)
         
         // TODO(stackotter): Use density-adaptive units everywhere
@@ -443,8 +446,8 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let heightSpec = Int32(proposedHeight ?? 0x3FFFFFFF)
 
         widget.measure(widthSpec, heightSpec)
-        let width = widget.getMeasuredWidth()
-        let height = widget.getMeasuredHeight()
-        return SIMD2(Int(width), Int(height))
+        let width = Double(widget.getMeasuredWidth()) / environment.windowScaleFactor
+        let height = Double(widget.getMeasuredHeight()) / environment.windowScaleFactor
+        return SIMD2(Int(width.rounded(.up)), Int(height.rounded(.up)))
     }
 }

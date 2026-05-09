@@ -2,7 +2,6 @@ import AndroidKit
 import AndroidGraphics
 import SwiftCrossUI
 
-// TODO(bbrk24): When everything else uses dp, also scale stroke width and actions
 // swiftlint:disable force_try
 extension AndroidBackend: BackendFeatures.Paths {
     public struct Path {
@@ -39,7 +38,7 @@ extension AndroidBackend: BackendFeatures.Paths {
         pointsChanged: Bool,
         environment: EnvironmentValues
     ) {
-        apply(strokeStyle: source.strokeStyle, to: path)
+        apply(strokeStyle: source.strokeStyle, density: environment.windowScaleFactor, to: path)
 
         let fillTypeClass = try! JavaClass<AndroidGraphics.Path.FillType>()
 
@@ -52,7 +51,7 @@ extension AndroidBackend: BackendFeatures.Paths {
 
         if pointsChanged {
             path.path.reset()
-            apply(actions: source.actions, to: path.path)
+            apply(actions: source.actions, environment: environment, to: path.path)
         }
     }
 
@@ -64,7 +63,11 @@ extension AndroidBackend: BackendFeatures.Paths {
         overrideStrokeStyle: StrokeStyle?
     ) {
         if let overrideStrokeStyle {
-            apply(strokeStyle: overrideStrokeStyle, to: path)
+            apply(
+                strokeStyle: overrideStrokeStyle,
+                density: Double(container.getResources().getDisplayMetrics().density),
+                to: path
+            )
         }
 
         path.strokePaint.setColor(strokeColor.asColorInt())
@@ -77,8 +80,12 @@ extension AndroidBackend: BackendFeatures.Paths {
         )
     }
 
-    private func apply(strokeStyle: StrokeStyle, to path: Path) {
-        path.strokePaint.setStrokeWidth(Float(strokeStyle.width))
+    private func apply(
+        strokeStyle: StrokeStyle,
+        density: Double,
+        to path: Path
+    ) {
+        path.strokePaint.setStrokeWidth(Float(strokeStyle.width * density))
 
         let capClass = try! JavaClass<AndroidKit.Paint.Cap>()
         switch strokeStyle.cap {
@@ -109,44 +116,49 @@ extension AndroidBackend: BackendFeatures.Paths {
         }
     }
 
-    private func apply(actions: [SwiftCrossUI.Path.Action], to path: AndroidGraphics.Path) {
+    private func apply(
+        actions: [SwiftCrossUI.Path.Action],
+        environment: EnvironmentValues,
+        to path: AndroidGraphics.Path
+    ) {
+        let d = environment.windowScaleFactor
         lazy var directionClass = try! JavaClass<AndroidGraphics.Path.Direction>()
 
         for action in actions {
             switch action {
                 case .moveTo(let point):
-                    path.moveTo(Float(point.x), Float(point.y))
+                    path.moveTo(Float(point.x * d), Float(point.y * d))
                 case .lineTo(let point):
-                    path.lineTo(Float(point.x), Float(point.y))
+                    path.lineTo(Float(point.x * d), Float(point.y * d))
                 case .quadCurve(let control, let end):
                     path.quadTo(
-                        Float(control.x),
-                        Float(control.y),
-                        Float(end.x),
-                        Float(end.y)
+                        Float(control.x * d),
+                        Float(control.y * d),
+                        Float(end.x * d),
+                        Float(end.y * d)
                     )
                 case .cubicCurve(let control1, let control2, let end):
                     path.cubicTo(
-                        Float(control1.x),
-                        Float(control1.y),
-                        Float(control2.x),
-                        Float(control2.y),
-                        Float(end.x),
-                        Float(end.y)
+                        Float(control1.x * d),
+                        Float(control1.y * d),
+                        Float(control2.x * d),
+                        Float(control2.y * d),
+                        Float(end.x * d),
+                        Float(end.y * d)
                     )
                 case .rectangle(let rect):
                     path.addRect(
-                        Float(rect.x),
-                        Float(rect.y),
-                        Float(rect.maxX),
-                        Float(rect.maxY),
+                        Float(rect.x * d),
+                        Float(rect.y * d),
+                        Float(rect.maxX * d),
+                        Float(rect.maxY * d),
                         directionClass.CW
                     )
                 case .circle(let center, let radius):
                     path.addCircle(
-                        Float(center.x),
-                        Float(center.y),
-                        Float(radius),
+                        Float(center.x * d),
+                        Float(center.y * d),
+                        Float(radius * d),
                         directionClass.CW
                     )
                 case .arc(let center, let radius, let startAngle, let endAngle, let clockwise):
@@ -166,10 +178,10 @@ extension AndroidBackend: BackendFeatures.Paths {
                     }
 
                     path.addArc(
-                        Float(center.x - radius),
-                        Float(center.y - radius),
-                        Float(center.x + radius),
-                        Float(center.y + radius),
+                        Float((center.x - radius) * d),
+                        Float((center.y - radius) * d),
+                        Float((center.x + radius) * d),
+                        Float((center.y + radius) * d),
                         Float(startAngle * 180 / .pi),
                         Float(sweepAngle * 180 / .pi)
                     )
@@ -178,10 +190,10 @@ extension AndroidBackend: BackendFeatures.Paths {
                     matrix.setValues([
                         Float(transform.linearTransform.x),
                         Float(transform.linearTransform.y),
-                        Float(transform.translation.x),
+                        Float(transform.translation.x * d),
                         Float(transform.linearTransform.z),
                         Float(transform.linearTransform.w),
-                        Float(transform.translation.y),
+                        Float(transform.translation.y * d),
                         0,
                         0,
                         1
@@ -189,7 +201,7 @@ extension AndroidBackend: BackendFeatures.Paths {
                     path.transform(matrix)
                 case .subpath(let actions):
                     let subPath = AndroidGraphics.Path(environment: Self.env)
-                    apply(actions: actions, to: subPath)
+                    apply(actions: actions, environment: environment, to: subPath)
                     path.addPath(subPath)
             }
         }

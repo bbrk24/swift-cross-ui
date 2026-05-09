@@ -47,7 +47,7 @@ extension AndroidBackend: BackendFeatures.Pickers {
                 options,
                 environment.isEnabled,
                 color: textStyle.color,
-                fontSize: textStyle.fontSizePixels,
+                fontSize: textStyle.fontSize,
                 lineHeight: textStyle.lineHeightPixels,
                 textStyle.typeface
             )

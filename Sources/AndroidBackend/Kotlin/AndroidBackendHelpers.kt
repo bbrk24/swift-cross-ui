@@ -4,6 +4,7 @@ import android.R
 import android.app.Activity
 import android.content.res.Configuration
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
 
@@ -20,28 +21,30 @@ class AndroidBackendHelpers {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val insets = windowMetrics.getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return windowMetrics.getBounds().width() - insets.left - insets.right
+        // density is very frequently a fractional value like 1.5, so cast to int after division
+        // instead of before
+        return ((windowMetrics.getBounds().width() - insets.left - insets.right).toFloat() / windowMetrics.density).toInt()
     }
 
     fun getWindowHeight(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val insets = windowMetrics.getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return windowMetrics.getBounds().height() - insets.top - insets.bottom
+        return ((windowMetrics.getBounds().height() - insets.top - insets.bottom).toFloat() / windowMetrics.density).toInt()
     }
 
     fun getSafeAreaLeftInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val insets = windowMetrics.getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return insets.left
+        return (insets.left.toFloat() / windowMetrics.density).toInt()
     }
 
     fun getSafeAreaTopInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val insets = windowMetrics.getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return insets.top
+        return (insets.top.toFloat() / windowMetrics.density).toInt()
     }
 
     private var largeTextSize: Float? = null
@@ -50,7 +53,11 @@ class AndroidBackendHelpers {
     private var smallTextSize: Float? = null
 
     private fun getFontSizeFromResource(activity: Activity, resId: Int) =
-        TextView(activity, null, 0, resId).paint.textSize
+        TypedValue.deriveDimension(
+            TypedValue.COMPLEX_UNIT_SP,
+            TextView(activity, null, 0, resId).paint.textSize,
+            activity.resources.displayMetrics
+        )
 
     fun clearTextSizeCache() {
         largeTextSize = null
