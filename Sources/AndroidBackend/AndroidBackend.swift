@@ -439,11 +439,16 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         // 0x3FFFFFFF = View.MeasureSpec.makeMeasureSpec(Int32.max, View.MeasureSpec.UNSPECIFIED)
         let widthSpec =
             if let proposedWidth {
-                Int32(bitPattern: 0x80000000 | UInt32(proposedWidth))
+                Int32(bitPattern: 0x80000000 | UInt32(Double(proposedWidth) * environment.windowScaleFactor) & ~0x40000000)
             } else {
                 0x3FFFFFFF as Int32
             }
-        let heightSpec = Int32(proposedHeight ?? 0x3FFFFFFF)
+        let heightSpec =
+            if let proposedHeight {
+                Int32(Double(proposedHeight) * environment.windowScaleFactor)
+            } else {
+                0x3FFFFFFF as Int32
+            }
 
         widget.measure(widthSpec, heightSpec)
         let width = Double(widget.getMeasuredWidth()) / environment.windowScaleFactor
