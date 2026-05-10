@@ -30,6 +30,7 @@ extension SwiftCrossUI.Color.Resolved {
     }
 }
 
+// swiftlint:disable force_try
 extension AndroidBackend: BackendFeatures.Colors {
     public func createColorableRectangle() -> Widget {
         AndroidKit.View(Self.activity, environment: Self.env)

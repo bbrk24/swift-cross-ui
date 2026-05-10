@@ -3,6 +3,7 @@ import AndroidGraphics
 import SwiftCrossUI
 
 // TODO(bbrk24): When everything else uses dp, also scale stroke width and actions
+// swiftlint:disable force_try
 extension AndroidBackend: BackendFeatures.Paths {
     public struct Path {
         var path: AndroidGraphics.Path
