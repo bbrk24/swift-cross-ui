@@ -121,44 +121,44 @@ extension AndroidBackend: BackendFeatures.Paths {
         environment: EnvironmentValues,
         to path: AndroidGraphics.Path
     ) {
-        let d = environment.windowScaleFactor
+        let density = environment.windowScaleFactor
         lazy var directionClass = try! JavaClass<AndroidGraphics.Path.Direction>()
 
         for action in actions {
             switch action {
                 case .moveTo(let point):
-                    path.moveTo(Float(point.x * d), Float(point.y * d))
+                    path.moveTo(Float(point.x * density), Float(point.y * density))
                 case .lineTo(let point):
-                    path.lineTo(Float(point.x * d), Float(point.y * d))
+                    path.lineTo(Float(point.x * density), Float(point.y * density))
                 case .quadCurve(let control, let end):
                     path.quadTo(
-                        Float(control.x * d),
-                        Float(control.y * d),
-                        Float(end.x * d),
-                        Float(end.y * d)
+                        Float(control.x * density),
+                        Float(control.y * density),
+                        Float(end.x * density),
+                        Float(end.y * density)
                     )
                 case .cubicCurve(let control1, let control2, let end):
                     path.cubicTo(
-                        Float(control1.x * d),
-                        Float(control1.y * d),
-                        Float(control2.x * d),
-                        Float(control2.y * d),
-                        Float(end.x * d),
-                        Float(end.y * d)
+                        Float(control1.x * density),
+                        Float(control1.y * density),
+                        Float(control2.x * density),
+                        Float(control2.y * density),
+                        Float(end.x * density),
+                        Float(end.y * density)
                     )
                 case .rectangle(let rect):
                     path.addRect(
-                        Float(rect.x * d),
-                        Float(rect.y * d),
-                        Float(rect.maxX * d),
-                        Float(rect.maxY * d),
+                        Float(rect.x * density),
+                        Float(rect.y * density),
+                        Float(rect.maxX * density),
+                        Float(rect.maxY * density),
                         directionClass.CW
                     )
                 case .circle(let center, let radius):
                     path.addCircle(
-                        Float(center.x * d),
-                        Float(center.y * d),
-                        Float(radius * d),
+                        Float(center.x * density),
+                        Float(center.y * density),
+                        Float(radius * density),
                         directionClass.CW
                     )
                 case .arc(let center, let radius, let startAngle, let endAngle, let clockwise):
@@ -178,10 +178,10 @@ extension AndroidBackend: BackendFeatures.Paths {
                     }
 
                     path.addArc(
-                        Float((center.x - radius) * d),
-                        Float((center.y - radius) * d),
-                        Float((center.x + radius) * d),
-                        Float((center.y + radius) * d),
+                        Float((center.x - radius) * density),
+                        Float((center.y - radius) * density),
+                        Float((center.x + radius) * density),
+                        Float((center.y + radius) * density),
                         Float(startAngle * 180 / .pi),
                         Float(sweepAngle * 180 / .pi)
                     )
@@ -190,10 +190,10 @@ extension AndroidBackend: BackendFeatures.Paths {
                     matrix.setValues([
                         Float(transform.linearTransform.x),
                         Float(transform.linearTransform.y),
-                        Float(transform.translation.x * d),
+                        Float(transform.translation.x * density),
                         Float(transform.linearTransform.z),
                         Float(transform.linearTransform.w),
-                        Float(transform.translation.y * d),
+                        Float(transform.translation.y * density),
                         0,
                         0,
                         1

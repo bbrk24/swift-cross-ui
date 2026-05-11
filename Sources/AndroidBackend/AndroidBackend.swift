@@ -340,8 +340,6 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         layoutParams.width = Int32(Float(size.x) * density)
         layoutParams.height = Int32(Float(size.y) * density)
         widget.setLayoutParams(layoutParams)
-        
-        // TODO(stackotter): Use density-adaptive units everywhere
     }
 
     public func createButton() -> Widget {
