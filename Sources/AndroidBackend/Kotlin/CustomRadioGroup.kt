@@ -25,7 +25,7 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
                 button.text = options[i]
                 button.setEnabled(isEnabled)
                 button.setTextColor(color)
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
+                button.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize)
                 button.lineHeight = lineHeight
                 button.typeface = typeface
             }
@@ -36,7 +36,7 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
                 button.id = i
                 button.setEnabled(isEnabled)
                 button.setTextColor(color)
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
+                button.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize)
                 button.lineHeight = lineHeight
                 button.typeface = typeface
                 addView(button)
@@ -47,7 +47,7 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
                 button.text = options[i]
                 button.setEnabled(isEnabled)
                 button.setTextColor(color)
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
+                button.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize)
                 button.lineHeight = lineHeight
                 button.typeface = typeface
             }
