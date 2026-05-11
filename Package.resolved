@@ -1,13 +1,13 @@
 {
-  "originHash" : "1ab616f4e066c05334e087fd60fbd4cb842e764b1f7b59093a9a799fcd9d94fe",
+  "originHash" : "848af29777f0d85216ca529814aeef544ac2b82e4829189e9521f4f5ce3070b3",
   "pins" : [
     {
       "identity" : "androidkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/AndroidKit",
       "state" : {
-        "revision" : "ef885e5d6248397b520327799dec1d3ddc808819",
-        "version" : "0.7.1"
+        "revision" : "937a0643efb2f0820dc62a9249729f12987bf340",
+        "version" : "0.7.2"
       }
     },
     {
