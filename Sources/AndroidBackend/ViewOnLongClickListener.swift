@@ -1,32 +1,18 @@
 import AndroidKit
+import SwiftJava
 
 @JavaClass(
     "dev.swiftcrossui.androidbackend.ViewOnLongClickListener",
     implements: AndroidView.View.OnLongClickListener.self
 )
 class ViewOnLongClickListener: JavaObject {
-    typealias Action = () -> ()
-
     @JavaMethod
-    @_nonoverride convenience init(action: SwiftObject?, environment: JNIEnvironment? = nil)
-
-    @JavaMethod
-    func getAction() -> SwiftObject?
-}
-
-@JavaImplementation("dev.swiftcrossui.androidbackend.ViewOnLongClickListener")
-extension ViewOnLongClickListener {
-    @JavaMethod
-    func onLongClick() -> Bool {
-        let action = getAction()!.value() as! Action
-        action()
-        return true
-    }
+    @_nonoverride convenience init(action: SwiftAction?, environment: JNIEnvironment? = nil)
 }
 
 extension ViewOnLongClickListener {
     convenience init(action: @escaping () -> (), environment: JNIEnvironment? = nil) {
-        let object = SwiftObject(action, environment: environment)
+        let object = SwiftAction(environment: environment, action: action)
         self.init(action: object, environment: environment)
     }
 }

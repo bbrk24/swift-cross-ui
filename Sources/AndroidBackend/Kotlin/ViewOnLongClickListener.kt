@@ -2,6 +2,9 @@ package dev.swiftcrossui.androidbackend
 
 import android.view.View
 
-class ViewOnLongClickListener(val action: SwiftObject): View.OnLongClickListener {
-    external override fun onLongClick(view: View): Boolean
+class ViewOnLongClickListener(private val action: SwiftAction): View.OnLongClickListener {
+    override fun onLongClick(view: View): Boolean {
+        action.call()
+        return true
+    }
 }
