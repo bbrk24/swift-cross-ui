@@ -63,7 +63,9 @@ jobs:
         swift build --target WebViewExample && \
         swift build --target HoverExample && \
         swift build --target AdvancedCustomizationExample && \
-        swift build --target MusicPlayerExample
+        swift build --target MusicPlayerExample && \
+        swift build --target FontsExample && \
+        swift build --target TapGesturesExample
 
   uikit:
     runs-on: macos-15
@@ -118,6 +120,8 @@ jobs:
             buildtarget HoverExample
             buildtarget AdvancedCustomizationExample
             buildtarget ControlsExample
+            buildtarget FontsExample
+            buildtarget TapGesturesExample
 
             if [ $device_type != TV ]; then
               # Slider is not implemented for tvOS
@@ -187,6 +191,8 @@ jobs:
         buildtarget AdvancedCustomizationExample
         buildtarget SplitExample
         buildtarget MusicPlayerExample
+        buildtarget FontsExample
+        buildtarget TapGesturesExample
         # TODO test whether this works on Catalyst
         # buildtarget SplitExample
 
@@ -340,7 +346,9 @@ jobs:
         swift build --target PathsExample && \
         swift build --target HoverExample && \
         swift build --target AdvancedCustomizationExample && \
-        swift build --target MusicPlayerExample
+        swift build --target MusicPlayerExample && \
+        swift build --target FontsExample && \
+        swift build --target TapGesturesExample
 
   assemble-docs:
     runs-on: macos-15
