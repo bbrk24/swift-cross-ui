@@ -279,11 +279,11 @@ struct WindowingApp: App {
                         isAlertSceneShown = true
                     }
 
+                    Divider()
+
+                    SheetDemo()
+
                     #if !os(Android)
-                        Divider()
-
-                        SheetDemo()
-
                         Divider()
 
                         OpenWindowDemo()
