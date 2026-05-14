@@ -116,6 +116,10 @@ let package = Package(
         .executableTarget(
             name: "FontsExample",
             dependencies: exampleDependencies
+        ),
+        .executableTarget(
+            name: "TapGesturesExample",
+            dependencies: exampleDependencies
         )
     ]
 )
