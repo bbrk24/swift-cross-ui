@@ -13,7 +13,7 @@ public class CustomSheet: JavaObject {
     func setOnDismissListener(_ onDismissListener: SwiftAction?)
 
     @JavaMethod
-    func setDismissable(_ isDismissable: Bool)
+    func update(_ isDismissable: Bool, _ backgroundColor: Int32)
 
     // Inherited from BottomSheetDialogFragment
     @JavaMethod
