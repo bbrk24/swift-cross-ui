@@ -3,7 +3,6 @@ package dev.swiftcrossui.androidbackend
 import android.R
 import android.app.Activity
 import android.content.res.Configuration
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
@@ -19,18 +18,26 @@ class AndroidBackendHelpers {
 
     fun getSafeWindowWidth(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val insets = windowMetrics.getWindowInsets()
+        val insets =
+            windowMetrics
+                .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
         // density is very frequently a fractional value like 1.5, so cast to int after division
         // instead of before
-        return ((windowMetrics.getBounds().width() - insets.left - insets.right).toFloat() / windowMetrics.density).toInt()
+        return ((windowMetrics.getBounds().width() - insets.left - insets.right).toFloat() /
+                windowMetrics.density)
+            .toInt()
     }
 
     fun getSafeWindowHeight(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val insets = windowMetrics.getWindowInsets()
+        val insets =
+            windowMetrics
+                .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return ((windowMetrics.getBounds().height() - insets.top - insets.bottom).toFloat() / windowMetrics.density).toInt()
+        return ((windowMetrics.getBounds().height() - insets.top - insets.bottom).toFloat() /
+                windowMetrics.density)
+            .toInt()
     }
 
     fun getFullWindowWidth(activity: Activity): Int {
@@ -47,14 +54,18 @@ class AndroidBackendHelpers {
 
     fun getSafeAreaLeftInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val insets = windowMetrics.getWindowInsets()
+        val insets =
+            windowMetrics
+                .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
         return (insets.left.toFloat() / windowMetrics.density).toInt()
     }
 
     fun getSafeAreaTopInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val insets = windowMetrics.getWindowInsets()
+        val insets =
+            windowMetrics
+                .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
         return (insets.top.toFloat() / windowMetrics.density).toInt()
     }
@@ -68,7 +79,7 @@ class AndroidBackendHelpers {
         TypedValue.deriveDimension(
             TypedValue.COMPLEX_UNIT_SP,
             TextView(activity, null, 0, resId).paint.textSize,
-            activity.resources.displayMetrics
+            activity.resources.displayMetrics,
         )
 
     fun clearTextSizeCache() {
@@ -79,38 +90,50 @@ class AndroidBackendHelpers {
     }
 
     fun getLargeTextSize(activity: Activity): Float {
-        val size = largeTextSize ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Large)
+        val size =
+            largeTextSize
+                ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Large)
         largeTextSize = size
         return size
     }
 
     fun getTitleTextSize(activity: Activity): Float {
-        val size = titleTextSize ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_WindowTitle)
+        val size =
+            titleTextSize
+                ?: getFontSizeFromResource(
+                    activity,
+                    R.style.TextAppearance_DeviceDefault_WindowTitle,
+                )
         titleTextSize = size
         return size
     }
 
     fun getMediumTextSize(activity: Activity): Float {
-        val size = mediumTextSize ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Medium)
+        val size =
+            mediumTextSize
+                ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Medium)
         mediumTextSize = size
         return size
     }
 
     fun getSmallTextSize(activity: Activity): Float {
-        val size = smallTextSize ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Small)
+        val size =
+            smallTextSize
+                ?: getFontSizeFromResource(activity, R.style.TextAppearance_DeviceDefault_Small)
         smallTextSize = size
         return size
     }
-    
+
     fun isNightMode(activity: Activity): Boolean {
         var uiModeNight =
             activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        
+
         if (uiModeNight == Configuration.UI_MODE_NIGHT_UNDEFINED) {
             uiModeNight =
-                activity.applicationContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                activity.applicationContext.resources.configuration.uiMode and
+                    Configuration.UI_MODE_NIGHT_MASK
         }
-        
+
         return uiModeNight == Configuration.UI_MODE_NIGHT_YES
     }
 
@@ -118,7 +141,10 @@ class AndroidBackendHelpers {
         // Code from the official Android compatibility test suite.
         // https://stackoverflow.com/a/69564916
         val pm = activity.packageManager
-        if (pm.hasSystemFeature("org.chromium.arc") || pm.hasSystemFeature("org.chromium.arc.device_management"))
+        if (
+            pm.hasSystemFeature("org.chromium.arc") ||
+                pm.hasSystemFeature("org.chromium.arc.device_management")
+        )
             return DEVICE_CLASS_DESKTOP
 
         val configuration = activity.resources.configuration
@@ -138,8 +164,7 @@ class AndroidBackendHelpers {
                 val isTablet =
                     if (sw == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED)
                         configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_XLARGE)
-                    else
-                        sw >= 600
+                    else sw >= 600
 
                 if (isTablet) DEVICE_CLASS_TABLET else DEVICE_CLASS_PHONE
             }

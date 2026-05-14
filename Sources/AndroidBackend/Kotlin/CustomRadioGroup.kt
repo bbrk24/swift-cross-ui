@@ -6,9 +6,9 @@ import android.util.TypedValue
 import android.widget.RadioButton
 import android.widget.RadioGroup
 
-class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
+class CustomRadioGroup(activity: Activity) : RadioGroup(activity) {
     fun getSelectedOption() = getCheckedRadioButtonId()
-    
+
     fun update(
         onChange: SwiftAction,
         options: Array<String>,
@@ -16,7 +16,7 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
         color: Int,
         fontSize: Float,
         lineHeight: Int,
-        typeface: Typeface
+        typeface: Typeface,
     ) {
         val optionCount = childCount
         if (optionCount < options.size) {
@@ -29,7 +29,7 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
                 button.lineHeight = lineHeight
                 button.typeface = typeface
             }
-            
+
             for (i in optionCount..<options.size) {
                 val button = RadioButton(context)
                 button.text = options[i]
@@ -51,27 +51,24 @@ class CustomRadioGroup(activity: Activity): RadioGroup(activity) {
                 button.lineHeight = lineHeight
                 button.typeface = typeface
             }
-            
-                    
+
             for (i in (options.size..<optionCount).reversed()) {
                 removeViewAt(i)
             }
         }
-        
-        setOnCheckedChangeListener { _, _ ->
-            onChange.call()
-        }
+
+        setOnCheckedChangeListener { _, _ -> onChange.call() }
     }
-    
+
     fun selectOption(index: Int) {
         val oldIndex = getCheckedRadioButtonId()
         if (oldIndex == index) return
-        
+
         if (oldIndex >= 0) {
             val oldButton = getChildAt(oldIndex) as RadioButton
             oldButton.isChecked = false
         }
-        
+
         if (index >= 0) {
             val newButton = getChildAt(index) as RadioButton
             newButton.isChecked = true
