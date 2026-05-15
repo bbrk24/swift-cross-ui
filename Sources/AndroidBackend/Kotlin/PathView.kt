@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.view.View
 
-class PathView(activity: Activity): View(activity) {
+class PathView(activity: Activity) : View(activity) {
     private lateinit var path: Path
     private lateinit var fillPaint: Paint
     private lateinit var strokePaint: Paint
