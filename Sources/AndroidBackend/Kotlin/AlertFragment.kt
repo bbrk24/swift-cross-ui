@@ -1,10 +1,8 @@
 package dev.swiftcrossui.androidbackend
 
 import android.R
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.DialogFragment // TODO(bbrk24): Use androidx.fragment.app.DialogFragment
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -12,12 +10,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDialogFragment
 
-class AlertFragment() : DialogFragment() {
-    companion object {
-        const val TAG = "AlertFragment"
-    }
-
+class AlertFragment() : AppCompatDialogFragment() {
     private var titleView: TextView? = null
     private var titleText: String? = null
 
@@ -43,11 +38,7 @@ class AlertFragment() : DialogFragment() {
                 0.0f,
             )
         val paddingAmount =
-            TypedValue.convertDimensionToPixels(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    16.0f,
-                    resources.displayMetrics,
-                )
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16.0f, resources.displayMetrics)
                 .toInt()
         titleLayoutParams.setMargins(paddingAmount, paddingAmount, paddingAmount, 0)
 
@@ -65,9 +56,11 @@ class AlertFragment() : DialogFragment() {
         setButtons()
         rootView.addView(buttonContainer)
 
-        val dialog = AlertDialog.Builder(activity).setCancelable(false).setView(rootView).create()
+        val dialog = AlertDialog.Builder(activity).setView(rootView).create()
 
         dialog.setCanceledOnTouchOutside(false)
+
+        this.setCancelable(false)
 
         return dialog
     }
@@ -84,10 +77,6 @@ class AlertFragment() : DialogFragment() {
 
         buttonTexts = buttons
         setButtons()
-    }
-
-    fun show(activity: Activity) {
-        show(activity.fragmentManager, TAG)
     }
 
     private fun setButtons() {
