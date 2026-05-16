@@ -1,3 +1,4 @@
+import AndroidKit
 import SwiftJava
 
 @JavaClass("androidx.fragment.app.FragmentManager")
@@ -7,4 +8,14 @@ class AndroidxFragmentManager: JavaObject {}
 class FragmentActivity: JavaObject {
     @JavaMethod
     func getSupportFragmentManager() -> AndroidxFragmentManager?
+}
+
+@JavaClass(
+    "androidx.fragment.app.Fragment",
+    implements: AndroidKit.ComponentCallbacks.self,
+    AndroidKit.View.OnCreateContextMenuListener.self
+)
+open class AndroidxFragment: JavaObject {
+    @JavaMethod
+    open func getView() -> AndroidKit.View?
 }
