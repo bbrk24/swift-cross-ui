@@ -3,6 +3,7 @@ package dev.swiftcrossui.androidbackend
 import android.R
 import android.app.Activity
 import android.content.res.Configuration
+import android.os.Build
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
@@ -18,6 +19,7 @@ class AndroidBackendHelpers {
 
     fun getSafeWindowWidth(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+        val displayMetrics = activity.resources.displayMetrics
         val insets =
             windowMetrics
                 .getWindowInsets()
@@ -25,49 +27,54 @@ class AndroidBackendHelpers {
         // density is very frequently a fractional value like 1.5, so cast to int after division
         // instead of before
         return ((windowMetrics.getBounds().width() - insets.left - insets.right).toFloat() /
-                windowMetrics.density)
+                displayMetrics.density)
             .toInt()
     }
 
     fun getSafeWindowHeight(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+        val displayMetrics = activity.resources.displayMetrics
         val insets =
             windowMetrics
                 .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
         return ((windowMetrics.getBounds().height() - insets.top - insets.bottom).toFloat() /
-                windowMetrics.density)
+                displayMetrics.density)
             .toInt()
     }
 
     fun getFullWindowWidth(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+        val displayMetrics = activity.resources.displayMetrics
         // density is very frequently a fractional value like 1.5, so cast to int after division
         // instead of before
-        return (windowMetrics.getBounds().width().toFloat() / windowMetrics.density).toInt()
+        return (windowMetrics.getBounds().width().toFloat() / displayMetrics.density).toInt()
     }
 
     fun getFullWindowHeight(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        return (windowMetrics.getBounds().height().toFloat() / windowMetrics.density).toInt()
+        val displayMetrics = activity.resources.displayMetrics
+        return (windowMetrics.getBounds().height().toFloat() / displayMetrics.density).toInt()
     }
 
     fun getSafeAreaLeftInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+        val displayMetrics = activity.resources.displayMetrics
         val insets =
             windowMetrics
                 .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return (insets.left.toFloat() / windowMetrics.density).toInt()
+        return (insets.left.toFloat() / displayMetrics.density).toInt()
     }
 
     fun getSafeAreaTopInset(activity: Activity): Int {
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+        val displayMetrics = activity.resources.displayMetrics
         val insets =
             windowMetrics
                 .getWindowInsets()
                 .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        return (insets.top.toFloat() / windowMetrics.density).toInt()
+        return (insets.top.toFloat() / displayMetrics.density).toInt()
     }
 
     private var largeTextSize: Float? = null
@@ -75,12 +82,19 @@ class AndroidBackendHelpers {
     private var mediumTextSize: Float? = null
     private var smallTextSize: Float? = null
 
-    private fun getFontSizeFromResource(activity: Activity, resId: Int) =
-        TypedValue.deriveDimension(
-            TypedValue.COMPLEX_UNIT_SP,
-            TextView(activity, null, 0, resId).paint.textSize,
-            activity.resources.displayMetrics,
-        )
+    private fun getFontSizeFromResource(activity: Activity, resId: Int): Float {
+        val sizePixels = TextView(activity, null, 0, resId).paint.textSize
+        val displayMetrics = activity.resources.displayMetrics
+        if (Build.VERSION.SDK_INT >= 34) {
+            return TypedValue.deriveDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                sizePixels,
+                displayMetrics,
+            )
+        } else {
+            return sizePixels / displayMetrics.scaledDensity
+        }
+    }
 
     fun clearTextSizeCache() {
         largeTextSize = null
