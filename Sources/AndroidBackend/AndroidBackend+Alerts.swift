@@ -28,7 +28,8 @@ extension AndroidBackend: BackendFeatures.Alerts {
         }
 
         alert.setAction(action)
-        alert.show(Self.activity)
+        let fragmentActivity = Self.activity.as(FragmentActivity.self)!
+        alert.show(fragmentActivity.getSupportFragmentManager(), "AlertFragment")
     }
 
     public func dismissAlert(_ alert: AlertFragment, window: Window?) {
