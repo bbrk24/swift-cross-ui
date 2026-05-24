@@ -359,14 +359,14 @@ extension EnvironmentValues {
     ///   use ``appPhase`` instead.
     public package(set) var scenePhase: ScenePhase {
         get {
-            if window != nil {
-                // If there's a window but no scenePhase, we assume that the
-                // backend is actively trying to _set_ the scene phase; return
-                // a dummy value to prevent a crash.
-                return .inactive
-            }
-
             guard let phase = self[__Key_scenePhase.self] else {
+                if window != nil {
+                    // If there's a window but no scenePhase, we assume that the
+                    // backend is actively trying to _set_ the scene phase; return
+                    // a dummy value to prevent a crash.
+                    return .inactive
+                }
+
                 fatalError(
                     """
                     'scenePhase' accessed from outside a scene (most likely \
