@@ -349,8 +349,8 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     }
 
     public func setSize(of widget: Widget, to size: SIMD2<Int>) {
+        guard let layoutParams = widget.getLayoutParams() else { return }
         let density = widget.getResources().getDisplayMetrics().density
-        let layoutParams = widget.getLayoutParams()!
         layoutParams.width = Int32(Float(size.x) * density)
         layoutParams.height = Int32(Float(size.y) * density)
         widget.setLayoutParams(layoutParams)
