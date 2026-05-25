@@ -53,16 +53,22 @@ extension AndroidBackend: BackendFeatures.Sheets {
 
         sheet.setOnDismissListener(SwiftAction(environment: Self.env, action: onDismiss))
 
-        let backgroundColor =
+        let backgroundColorInt =
             if let backgroundColor {
-                backgroundColor
+                backgroundColor.asColorInt()
             } else {
                 switch environment.colorScheme {
-                    case .dark: SwiftCrossUI.Color.Resolved(red: 0, green: 0, blue: 0)
-                    case .light: SwiftCrossUI.Color.Resolved(red: 1, green: 1, blue: 1)
+                    case .dark:
+                        // The default sheet background color in dark mode is a grayish color, not
+                        // black, but there doesn't seem to be a publicly-exposed resource ID for it
+                        // either. This was color-picked from an emulator.
+                        Int32(bitPattern: 0xff25232b)
+                    case .light:
+                        // white
+                        Int32(bitPattern: 0xffffffff)
                 }
             }
 
-        sheet.update(!interactiveDismissDisabled, backgroundColor.asColorInt())
+        sheet.update(!interactiveDismissDisabled, backgroundColorInt)
     }
 }
