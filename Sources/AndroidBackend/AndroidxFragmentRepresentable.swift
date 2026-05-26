@@ -11,18 +11,38 @@ public protocol AndroidxFragmentRepresentable: SwiftCrossUI.View where Content =
     associatedtype FragmentType: AndroidxFragment
     associatedtype Coordinator = Void
 
+    /// Make the coordinator for this fragment.
+    ///
+    /// The coordinator is used when the fragment needs to communicate changes to the rest of
+    /// the view hierarchy (i.e. through bindings).
     @MainActor
     func makeCoordinator() -> Coordinator
 
+    /// Create the initial `androidx.fragment.app.Fragment` instance.
     @MainActor
     func makeFragment(context: Self.Context) -> FragmentType
 
+    /// Update the fragment with new values.
+    /// - Parameters:
+    ///   - fragment: The fragment to update.
+    ///   - context: The context, including the coordinator and potentially new environment
+    ///   values.
+    /// - Note: This may be called even when `context` has not changed.
     @MainActor
     func updateFragment(
         _ fragment: FragmentType,
         context: Self.Context
     )
 
+    /// Compute the fragment's preferred size.
+    ///
+    /// The default implementation uses `fragment.getView().measure(_:_:)` to determine the
+    /// fragment's preferred size.
+    /// - Parameters:
+    ///   - proposal: The proposed size for the fragment.
+    ///   - fragment: The fragment being queried for its preferred size.
+    ///   - context: The context, including the coordinator and environment values.
+    /// - Returns: The fragment's preferred size.
     @MainActor
     func sizeThatFits(
         _ proposal: ProposedViewSize,
@@ -30,6 +50,12 @@ public protocol AndroidxFragmentRepresentable: SwiftCrossUI.View where Content =
         context: Self.Context
     ) -> ViewSize
 
+    /// Called to clean up the fragment when it's removed.
+    ///
+    /// The default implementation does nothing.
+    /// - Parameters:
+    ///   - fragment: The fragment being dismantled.
+    ///   - coordinator: The coordinator.
     static func dismantleFragment(
         _ fragment: FragmentType,
         coordinator: Coordinator

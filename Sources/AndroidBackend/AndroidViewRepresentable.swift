@@ -11,24 +11,46 @@ public protocol AndroidViewRepresentable: SwiftCrossUI.View where Content == Nev
     associatedtype ViewType: AndroidKit.View
     associatedtype Coordinator = Void
 
+    /// Make the coordinator for this view.
+    ///
+    /// The coordinator is used when the view needs to communicate changes to the rest of
+    /// the view hierarchy (i.e. through bindings).
     @MainActor
     func makeCoordinator() -> Coordinator
 
+    /// Create the initial `android.view.View` instance.
     @MainActor
     func makeAndroidView(context: Self.Context) -> ViewType
 
+    /// Update the view with new values.
+    /// - Parameters:
+    ///   - view: The view to update.
+    ///   - context: The context, including the coordinator and potentially new environment
+    ///   values.
+    /// - Note: This may be called even when `context` has not changed.
     @MainActor
     func updateAndroidView(
         _ view: ViewType,
         context: Self.Context
     )
 
+    /// Compute the view's preferred size.
+    ///
+    /// The default implementation uses `view.measure(_:_:)` to determine the view's preferred size.
+    /// - Parameters:
+    ///   - proposal: The proposed size for the view.
+    ///   - view: The view being queried for its preferred size.
+    ///   - context: The context, including the coordinator and environment values.
+    /// - Returns: The view's preferred size.
     @MainActor
     func sizeThatFits(
         _ proposal: ProposedViewSize,
         view: ViewType,
         context: Self.Context
     ) -> ViewSize
+
+    // TODO(bbrk24): Support dismantleAndroidView
+    // View doesn't have the same kind of lifecycle as Fragment, so it's not straightforward
 }
 
 extension AndroidViewRepresentable {
