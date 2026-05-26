@@ -15,6 +15,13 @@ import androidx.lifecycle.LifecycleEventObserver
 class FragmentRepresentingView(activity: FragmentActivity) : FrameLayout(activity) {
     private val containerView = FragmentContainerView(activity)
 
+    var swiftContext: SwiftObject? = null
+
+    // TODO(bbrk24): Once we upgrade to androidx.fragment 1.4 or later, this could just be
+    //   computed as containerView.getFragment() instead of being a stored property
+    var fragment: Fragment? = null
+        private set
+
     init {
         containerView.id = View.generateViewId()
         containerView.layoutParams =
@@ -27,10 +34,14 @@ class FragmentRepresentingView(activity: FragmentActivity) : FrameLayout(activit
         addView(containerView)
     }
 
-    var swiftContext: SwiftObject? = null
-    var onDestroyListener: SwiftAction? = null
+    fun set(
+        fragment: Fragment,
+        manager: FragmentManager,
+        onStartListener: SwiftAction,
+        onDestroyListener: SwiftAction,
+    ) {
+        this.fragment = fragment
 
-    fun setFragment(fragment: Fragment, manager: FragmentManager) {
         val transaction = manager.beginTransaction()
         transaction.setReorderingAllowed(true)
         transaction.replace(containerView.id, fragment)
@@ -38,14 +49,12 @@ class FragmentRepresentingView(activity: FragmentActivity) : FrameLayout(activit
 
         fragment.lifecycle.addObserver(
             LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    onDestroyListener?.call()
+                when (event) {
+                    Lifecycle.Event.ON_START -> onStartListener.call()
+                    Lifecycle.Event.ON_DESTROY -> onDestroyListener.call()
+                    else -> {}
                 }
             }
         )
     }
-
-    // FIXME: Upgrade to androidx.fragment 1.4 or later (ideally 1.8) so that this method actually
-    // exists
-    fun getFragment(): Fragment? = containerView.getFragment()
 }

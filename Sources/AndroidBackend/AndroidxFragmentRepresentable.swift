@@ -46,8 +46,9 @@ extension AndroidxFragmentRepresentable {
         context: Self.Context
     ) -> ViewSize {
         guard let view = fragment.getView() else {
-            // TODO(bbrk24): Request relayout after view is created
-            return proposal.replacingUnspecifiedDimensions(by: .init(10, 10))
+            // onCreateView has not been called yet. onStart will trigger a relayout, but for now,
+            // return a placeholder value.
+            return .zero
         }
 
         let density = context.environment.windowScaleFactor
@@ -73,6 +74,14 @@ extension AndroidxFragmentRepresentable {
             } else {
                 0x3FFFFFFF as Int32
             }
+
+        // For some reason, the measured size often prefers to return the current size over the
+        // ideal size when given AT_MOST. Set the size to WRAP_CONTENT to suppress this effect.
+        let layoutParamsClass = try! JavaClass<AndroidKit.ViewGroup.LayoutParams>()
+        let layoutParams = view.getLayoutParams()!
+        layoutParams.width = layoutParamsClass.WRAP_CONTENT
+        layoutParams.height = layoutParamsClass.WRAP_CONTENT
+        view.setLayoutParams(layoutParams)
 
         view.measure(widthMeasureSpec, heightMeasureSpec)
 
@@ -112,12 +121,11 @@ class FragmentRepresentingView: AndroidKit.FrameLayout {
     func setSwiftContext(_ swiftContext: SwiftObject?)
 
     @JavaMethod
-    func setOnDestroyListener(_ onDestroyListener: SwiftAction?)
-
-    @JavaMethod
-    func setFragment(
-        _ fragment: AndroidxFragment!,
-        _ manager: AndroidxFragmentManager!
+    func set(
+        fragment: AndroidxFragment!,
+        manager: AndroidxFragmentManager!,
+        onStartListener: SwiftAction!,
+        onDestroyListener: SwiftAction!
     )
 
     @JavaMethod
@@ -150,13 +158,22 @@ extension FragmentRepresentingView {
         } else {
             fragment = representable.makeFragment(context: context)
             let fragmentActivity = environment.androidActivity.as(FragmentActivity.self)!
-            setFragment(fragment, fragmentActivity.getSupportFragmentManager())
+
+            let onStartListener = SwiftAction(environment: environment.jniEnv) {
+                let context = self.getSwiftContext()!.value() as! T.Context
+                context.environment.onResize(.zero)
+            }
 
             let coordinator = context.coordinator
-            widget.setOnDestroyListener(
-                SwiftAction(environment: environment.jniEnv) {
-                    T.dismantleFragment(fragment, coordinator: coordinator)
-                }
+            let onDestroyListener = SwiftAction(environment: environment.jniEnv) {
+                T.dismantleFragment(fragment, coordinator: coordinator)
+            }
+
+            set(
+                fragment: fragment,
+                manager: fragmentActivity.getSupportFragmentManager(),
+                onStartListener: onStartListener,
+                onDestroyListener: onDestroyListener
             )
         }
 
