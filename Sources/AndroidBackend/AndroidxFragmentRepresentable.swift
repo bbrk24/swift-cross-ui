@@ -2,6 +2,7 @@ import AndroidKit
 import SwiftCrossUI
 import SwiftJava
 
+@MainActor
 public struct AndroidxFragmentRepresentableContext<Representable: AndroidxFragmentRepresentable> {
     public let coordinator: Representable.Coordinator
     public internal(set) var environment: EnvironmentValues
@@ -26,7 +27,7 @@ public protocol AndroidxFragmentRepresentable: SwiftCrossUI.View where Content =
     /// - Parameters:
     ///   - fragment: The fragment to update.
     ///   - context: The context, including the coordinator and potentially new environment
-    ///   values.
+    ///     values.
     /// - Note: This may be called even when `context` has not changed.
     @MainActor
     func updateFragment(

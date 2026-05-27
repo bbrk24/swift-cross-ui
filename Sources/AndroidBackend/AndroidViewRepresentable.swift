@@ -2,6 +2,7 @@ import AndroidKit
 import SwiftCrossUI
 import SwiftJava
 
+@MainActor
 public struct AndroidViewRepresentableContext<Representable: AndroidViewRepresentable> {
     public let coordinator: Representable.Coordinator
     public internal(set) var environment: EnvironmentValues
@@ -26,7 +27,7 @@ public protocol AndroidViewRepresentable: SwiftCrossUI.View where Content == Nev
     /// - Parameters:
     ///   - view: The view to update.
     ///   - context: The context, including the coordinator and potentially new environment
-    ///   values.
+    ///     values.
     /// - Note: This may be called even when `context` has not changed.
     @MainActor
     func updateAndroidView(
