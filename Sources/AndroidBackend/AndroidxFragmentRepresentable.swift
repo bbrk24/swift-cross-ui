@@ -62,6 +62,7 @@ public protocol AndroidxFragmentRepresentable: SwiftCrossUI.View where Content =
     )
 }
 
+// swiftlint:disable force_try
 extension AndroidxFragmentRepresentable {
     public typealias Context = AndroidxFragmentRepresentableContext<Self>
 
