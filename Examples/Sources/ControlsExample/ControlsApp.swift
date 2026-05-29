@@ -26,11 +26,6 @@ enum BuiltInPickerStyle: CaseIterable, Equatable {
     }
 }
 
-#if canImport(AndroidBackend)
-    // TODO(bbrk24): Update this once AndroidBackend supports scrolling
-    typealias ScrollView = VStack
-#endif
-
 @main
 @HotReloadable
 struct ControlsApp: App {
