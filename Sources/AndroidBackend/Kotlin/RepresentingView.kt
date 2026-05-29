@@ -14,6 +14,7 @@ class RepresentingView(activity: Activity) : FrameLayout(activity) {
     var child: View?
         get() = _child
         set(value) {
+            removeAllViews()
             _child = value
             value?.let {
                 addView(it)
