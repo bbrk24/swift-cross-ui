@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.icu.util.TimeZone
 import android.os.Build
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
