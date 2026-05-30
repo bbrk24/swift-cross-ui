@@ -4,10 +4,15 @@ import android.R
 import android.app.Activity
 import android.content.res.Configuration
 import android.icu.util.TimeZone
+import android.net.Uri
 import android.os.Build
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.FragmentActivity
+import dev.swiftcrossui.androidbackend.activityresults.*
 
 class AndroidBackendHelpers {
     companion object {
@@ -197,5 +202,30 @@ class AndroidBackendHelpers {
         } else {
             return TimeZone.getCanonicalID(tz.getID())
         }
+    }
+
+    private lateinit var filesLauncher: ActivityResultLauncher<FilesActivityContract.Options>
+    private lateinit var folderLauncher: ActivityResultLauncher<Uri?>
+
+    fun registerActivityResults(
+        activity: FragmentActivity,
+        filesCallback: FilesActivityCallback,
+        folderCallback: FolderActivityCallback,
+    ) {
+        filesLauncher = activity.registerForActivityResult(FilesActivityContract(), filesCallback)
+
+        folderLauncher =
+            activity.registerForActivityResult(
+                ActivityResultContracts.OpenDocumentTree(),
+                folderCallback,
+            )
+    }
+
+    fun launchFilesActivity(options: FilesActivityContract.Options) {
+        filesLauncher.launch(options)
+    }
+
+    fun launchFolderActivity(urlString: String?) {
+        folderLauncher.launch(urlString?.let { Uri.parse(it) })
     }
 }

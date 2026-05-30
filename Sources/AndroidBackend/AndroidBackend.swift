@@ -105,6 +105,9 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
     public let supportsMultipleWindows = false
     public let canOverrideWindowColorScheme = false
 
+    static var fileDialogCallback: (([Foundation.URL]) -> Void)?
+    static var folderDialogCallback: ((Foundation.URL?) -> Void)?
+
     /// A reference used to keep the tickler alive.
     var tickler: MainRunLoopTickler?
 
@@ -117,6 +120,36 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
     public init() {
         helpers = AndroidBackendHelpers(environment: Self.env)
+
+        let fragmentActivity = Self.activity.as(FragmentActivity.self)!
+
+        let filesCallback = FilesActivityCallback(environment: Self.env)
+        let filesAction = SwiftAction(environment: Self.env) {
+            let urls = filesCallback.getUrlStrings()
+            AndroidBackend.fileDialogCallback?(urls.map {
+                guard let url = Foundation.URL(string: $0) else {
+                    fatalError("Failed to convert Uri to Foundation.URL: \($0)")
+                }
+                return url
+            })
+            AndroidBackend.fileDialogCallback = nil
+        }
+        filesCallback.setAction(filesAction)
+
+        let folderCallback = FolderActivityCallback(environment: Self.env)
+        let folderAction = SwiftAction(environment: Self.env) {
+            let url = folderCallback.getUrlString()?.toString()
+            AndroidBackend.folderDialogCallback?(url.map {
+                guard let url = Foundation.URL(string: $0) else {
+                    fatalError("Failed to convert Uri to Foundation.URL: \($0)")
+                }
+                return url
+            })
+            AndroidBackend.folderDialogCallback = nil
+        }
+        folderCallback.setAction(folderAction)
+
+        helpers.registerActivityResults(fragmentActivity, filesCallback, folderCallback)
     }
 
     public func runMainLoop(
@@ -175,8 +208,8 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
         let matchParent = try! JavaClass<AndroidKit.ViewGroup.LayoutParams>().MATCH_PARENT
 
-        let leftInset = Int(helpers.getSafeAreaLeftInset(Self.activity))
-        let topInset = Int(helpers.getSafeAreaTopInset(Self.activity))
+        let leftInset = Int(Self.helpers.getSafeAreaLeftInset(Self.activity))
+        let topInset = Int(Self.helpers.getSafeAreaTopInset(Self.activity))
         let fullWindowSize = SIMD2(Int(matchParent), Int(matchParent))
         setSize(of: container, to: fullWindowSize)
         setPosition(ofChildAt: 0, in: container, to: SIMD2(leftInset, topInset))
