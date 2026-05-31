@@ -208,15 +208,6 @@
       }
     },
     {
-      "identity" : "swift-cwinrt",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/moreSwift/swift-cwinrt",
-      "state" : {
-        "revision" : "601287a2a89e8e56e8aa53782b6054db8be0bce8",
-        "version" : "0.1.2"
-      }
-    },
-    {
       "identity" : "swift-filestreamer",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sersoft-gmbh/swift-filestreamer",
@@ -352,48 +343,12 @@
       }
     },
     {
-      "identity" : "swift-uwp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/moreSwift/swift-uwp",
-      "state" : {
-        "revision" : "a0a86467514eaa63272eae848c70d49e6874ede4",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "swift-webview2core",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/moreSwift/swift-webview2core",
-      "state" : {
-        "revision" : "a8ed52a57f6d81ee06c8db692f8ee0431174379a",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "swift-windowsappsdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/moreSwift/swift-windowsappsdk",
-      "state" : {
-        "revision" : "40d2db0c4cfadf557b9ce60a0ce1c5c96defc438",
-        "version" : "0.1.2"
-      }
-    },
-    {
-      "identity" : "swift-windowsfoundation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/moreSwift/swift-windowsfoundation",
-      "state" : {
-        "revision" : "94d56a5aea472672bc5d041c091f6cdf72e3cc44",
-        "version" : "0.1.0"
-      }
-    },
-    {
       "identity" : "swift-winui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-winui",
       "state" : {
-        "revision" : "73d5d19c39c523c92355027dd13aee445fc627a7",
-        "version" : "0.1.1"
+        "revision" : "7cce3fcd0b55c48e6d8993fd2c7c392e8bc945c4",
+        "version" : "0.2.0"
       }
     },
     {
