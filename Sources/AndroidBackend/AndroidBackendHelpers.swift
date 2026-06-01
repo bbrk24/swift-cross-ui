@@ -46,4 +46,17 @@ class AndroidBackendHelpers: JavaObject {
 
     @JavaMethod
     func getTimeZoneIdentifier() -> JavaString?
+
+    @JavaMethod
+    func registerActivityResults(
+        _ activity: FragmentActivity!,
+        _ filesCallback: FilesActivityCallback!,
+        _ folderCallback: FolderActivityCallback!,
+    )
+
+    @JavaMethod
+    func launchFilesActivity(_ options: FilesActivityContract.Options!)
+
+    @JavaMethod
+    func launchFolderActivity(_ urlString: JavaString?)
 }
