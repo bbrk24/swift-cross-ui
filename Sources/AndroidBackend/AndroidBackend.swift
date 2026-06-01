@@ -298,6 +298,9 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             environment.calendar = getCurrentCalendar(timeZone: nil)
         }
 
+        environment
+            .appStorageProvider = SharedPreferencesAppStorageProvider(activity: Self.activity)
+
         return environment
     }
 
