@@ -73,6 +73,11 @@ extension App {
     }
 }
 
+extension EnvironmentValues {
+    @Entry public var androidActivity: AndroidKit.Activity! = nil
+    @Entry public var jniEnv: UnsafeMutablePointer<JNIEnv?>? = nil
+}
+
 // TODO: Implement the rest of `BaseAppBackend` so we can move off of `BaseStubs`
 
 public final class AndroidBackend: BackendFeatures.BaseStubs {
@@ -237,6 +242,9 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
 
     public func computeRootEnvironment(defaultEnvironment: EnvironmentValues) -> EnvironmentValues {
         var environment = defaultEnvironment
+
+        environment.androidActivity = Self.activity
+        environment.jniEnv = Self.env
 
         if helpers.isNightMode(Self.activity) {
             environment.colorScheme = .dark
