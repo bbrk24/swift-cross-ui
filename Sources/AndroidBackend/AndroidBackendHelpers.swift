@@ -43,4 +43,7 @@ class AndroidBackendHelpers: JavaObject {
 
     @JavaMethod
     func getDeviceClass(_ activity: Activity?) -> Int16
+
+    @JavaMethod
+    func getTimeZoneIdentifier() -> JavaString?
 }
