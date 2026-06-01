@@ -101,7 +101,6 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         }
 
     public let defaultPaddingAmount = 10
-    public let requiresImageUpdateOnScaleFactorChange = false
     public let supportsMultipleWindows = false
     public let canOverrideWindowColorScheme = false
 
