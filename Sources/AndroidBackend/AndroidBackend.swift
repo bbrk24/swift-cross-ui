@@ -168,12 +168,11 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
             return
         }
 
+        let matchParent = try! JavaClass<AndroidKit.ViewGroup.LayoutParams>().MATCH_PARENT
+
         let leftInset = Int(helpers.getSafeAreaLeftInset(Self.activity))
         let topInset = Int(helpers.getSafeAreaTopInset(Self.activity))
-        let fullWindowSize = SIMD2(
-            Int(helpers.getFullWindowWidth(Self.activity)),
-            Int(helpers.getFullWindowHeight(Self.activity))
-        )
+        let fullWindowSize = SIMD2(Int(matchParent), Int(matchParent))
         setSize(of: container, to: fullWindowSize)
         setPosition(ofChildAt: 0, in: container, to: SIMD2(leftInset, topInset))
 

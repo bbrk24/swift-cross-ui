@@ -17,16 +17,6 @@ class AndroidBackendHelpers: JavaObject {
     @JavaMethod
     func getSafeWindowHeight(_ activity: Activity?) -> Int32
 
-    /// Get the window width, including the parts that extend outside of the
-    /// safe areas.
-    @JavaMethod
-    func getFullWindowWidth(_ activity: Activity?) -> Int32
-
-    /// Get the window height, including the parts that extend outside of the
-    /// safe areas.
-    @JavaMethod
-    func getFullWindowHeight(_ activity: Activity?) -> Int32
-
     @JavaMethod
     func getSafeAreaLeftInset(_ activity: Activity?) -> Int32
 

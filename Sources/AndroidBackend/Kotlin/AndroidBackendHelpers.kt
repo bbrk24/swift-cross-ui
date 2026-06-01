@@ -17,7 +17,13 @@ class AndroidBackendHelpers {
         private const val DEVICE_CLASS_WATCH: Short = 4
     }
 
+    // In API 34 and earlier, the insets are accounted for by the system, and it's impossible to
+    // render anything within them. resources.configuration has the correct size.
+    // Starting in API 35, it is possible to render things in the insets, and the system bars are
+    // transparent.
     fun getSafeWindowWidth(activity: Activity): Int {
+        if (Build.VERSION.SDK_INT <= 34) return activity.resources.configuration.screenWidthDp
+
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val displayMetrics = activity.resources.displayMetrics
         val insets =
@@ -32,6 +38,8 @@ class AndroidBackendHelpers {
     }
 
     fun getSafeWindowHeight(activity: Activity): Int {
+        if (Build.VERSION.SDK_INT <= 34) return activity.resources.configuration.screenHeightDp
+
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val displayMetrics = activity.resources.displayMetrics
         val insets =
@@ -43,21 +51,9 @@ class AndroidBackendHelpers {
             .toInt()
     }
 
-    fun getFullWindowWidth(activity: Activity): Int {
-        val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val displayMetrics = activity.resources.displayMetrics
-        // density is very frequently a fractional value like 1.5, so cast to int after division
-        // instead of before
-        return (windowMetrics.getBounds().width().toFloat() / displayMetrics.density).toInt()
-    }
-
-    fun getFullWindowHeight(activity: Activity): Int {
-        val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-        val displayMetrics = activity.resources.displayMetrics
-        return (windowMetrics.getBounds().height().toFloat() / displayMetrics.density).toInt()
-    }
-
     fun getSafeAreaLeftInset(activity: Activity): Int {
+        if (Build.VERSION.SDK_INT <= 34) return 0
+
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val displayMetrics = activity.resources.displayMetrics
         val insets =
@@ -68,6 +64,8 @@ class AndroidBackendHelpers {
     }
 
     fun getSafeAreaTopInset(activity: Activity): Int {
+        if (Build.VERSION.SDK_INT <= 34) return 0
+
         val windowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
         val displayMetrics = activity.resources.displayMetrics
         val insets =
