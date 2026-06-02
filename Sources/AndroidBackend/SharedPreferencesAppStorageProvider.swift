@@ -9,6 +9,7 @@ extension AndroidKit.SharedPreferences {
     func getString(key: String, defaultValue: JavaString?) throws -> JavaString?
 }
 
+// swiftlint:disable force_try
 public struct SharedPreferencesAppStorageProvider: AppStorageProvider {
     private let sharedPreferences: AndroidKit.SharedPreferences
     private let encoder = Foundation.JSONEncoder()
@@ -41,7 +42,8 @@ public struct SharedPreferencesAppStorageProvider: AppStorageProvider {
     ) -> Value? {
         var jsonString: String
         do {
-            guard let javaString = try sharedPreferences.getString(key: key, defaultValue: nil)
+            guard
+                let javaString = try sharedPreferences.getString(key: key, defaultValue: nil)
             else {
                 return nil
             }
@@ -51,7 +53,7 @@ public struct SharedPreferencesAppStorageProvider: AppStorageProvider {
             return nil
         }
 
-        guard let data = jsonString.data(using: .utf8) else { return nil }
+        let data = Data(jsonString.utf8)
 
         return try? decoder.decode(type, from: data)
     }
