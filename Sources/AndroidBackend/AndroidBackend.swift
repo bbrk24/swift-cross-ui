@@ -151,6 +151,19 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         helpers.registerActivityResults(fragmentActivity, filesCallback, folderCallback)
     }
 
+    public convenience init(delegate: any ActivityDelegate) {
+        self.init()
+
+        let delegateObject = SwiftObject(delegate, environment: Self.env)
+        let castedActivity = Self.activity.as(FragmentActivity.self)!
+
+        // ActivityListener.init connects it to the Activity, which keeps it alive without Swift
+        // needing to keep any references to it.
+        _ = ActivityListener(castedActivity, delegateObject, environment: Self.env)
+
+        delegate.onCreate(of: castedActivity, env: Self.env)
+    }
+
     public func runMainLoop(
         _ callback: @escaping @MainActor () -> Void
     ) {
