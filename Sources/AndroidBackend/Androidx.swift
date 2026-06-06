@@ -4,8 +4,11 @@ import SwiftJava
 @JavaClass("androidx.fragment.app.FragmentManager")
 class AndroidxFragmentManager: JavaObject {}
 
-@JavaClass("androidx.fragment.app.FragmentActivity")
-class FragmentActivity: JavaObject {
+@JavaClass(
+    "androidx.fragment.app.FragmentActivity",
+    extends: AndroidKit.Activity.self
+)
+open class FragmentActivity: AndroidKit.Activity {
     @JavaMethod
     func getSupportFragmentManager() -> AndroidxFragmentManager?
 }
