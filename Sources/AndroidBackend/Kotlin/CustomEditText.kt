@@ -62,7 +62,6 @@ open class CustomEditText(activity: Activity) : EditText(activity) {
         lengthAfter: Int,
     ) {
         if (!isSettingText) {
-            // FIXME: If the user is typing too fast, this drops some keystrokes
             onChange?.call()
         }
     }
