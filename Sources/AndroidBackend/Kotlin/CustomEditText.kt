@@ -12,6 +12,11 @@ open class CustomEditText(activity: Activity) : EditText(activity) {
 
     private var isSettingText = false
 
+    private fun isSubmitAction(action: Int) =
+        action == EditorInfo.IME_ACTION_SEND ||
+            action == EditorInfo.IME_ACTION_GO ||
+            action == EditorInfo.IME_ACTION_SEARCH
+
     init {
         setOnEditorActionListener { v, actionId, event ->
             val action =
@@ -19,11 +24,7 @@ open class CustomEditText(activity: Activity) : EditText(activity) {
                 else actionId
 
             Log.v("CustomEditText", "Editor action!")
-            if (
-                action == EditorInfo.IME_ACTION_SEND ||
-                    action == EditorInfo.IME_ACTION_GO ||
-                    action == EditorInfo.IME_ACTION_SEARCH
-            ) {
+            if (isSubmitAction(action)) {
                 Log.v("CustomEditText", "Submit")
                 onSubmit?.call()
                 onSubmit != null
@@ -36,8 +37,12 @@ open class CustomEditText(activity: Activity) : EditText(activity) {
     fun setOnSubmit(value: SwiftAction?) {
         onSubmit = value
         if (value != null) {
-            imeOptions =
-                (imeOptions and EditorInfo.IME_MASK_ACTION.inv()) or EditorInfo.IME_ACTION_GO
+            val currentOptions = imeOptions
+            if (!isSubmitAction(currentOptions and EditorInfo.IME_MASK_ACTION)) {
+                imeOptions =
+                    (currentOptions and EditorInfo.IME_MASK_ACTION.inv()) or
+                        EditorInfo.IME_ACTION_GO
+            }
         }
     }
 

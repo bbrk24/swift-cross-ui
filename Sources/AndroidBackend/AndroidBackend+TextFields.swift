@@ -31,7 +31,12 @@ extension AndroidBackend: BackendFeatures.TextFields, BackendFeatures.SecureFiel
         )
         textField.setEnabled(environment.isEnabled)
         textField.setMaxLines(isMultiline ? 1 : .max)
-        textField.setInputType(environment.textContentType.toInputType(isMultiline: isMultiline))
+
+        let expectedInputType = environment.textContentType.toInputType(isMultiline: isMultiline)
+        if textField.getInputType() != expectedInputType {
+            textField.setInputType(expectedInputType)
+        }
+
         if let onSubmit {
             textField.setOnSubmit(SwiftAction(environment: Self.env, action: onSubmit))
         } else {
