@@ -30,7 +30,7 @@ extension AndroidBackend: BackendFeatures.TextFields, BackendFeatures.SecureFiel
             }
         )
         textField.setEnabled(environment.isEnabled)
-        textField.setMaxLines(isMultiline ? 1 : .max)
+        textField.setMaxLines(isMultiline ? .max : 1)
 
         let expectedInputType = environment.textContentType.toInputType(isMultiline: isMultiline)
         if textField.getInputType() != expectedInputType {
@@ -101,7 +101,10 @@ extension AndroidBackend: BackendFeatures.TextFields, BackendFeatures.SecureFiel
     }
 
     public func createTextEditor() -> Widget {
-        CustomEditText(activity: Self.activity, environment: Self.env)
+        let editText = CustomEditText(activity: Self.activity, environment: Self.env)
+        editText.setBackground(nil)
+        editText.setPadding(0, 0, 0, 0)
+        return editText
     }
 
     public func updateTextEditor(
