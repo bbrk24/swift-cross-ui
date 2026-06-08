@@ -1,7 +1,6 @@
 package dev.swiftcrossui.androidbackend
 
 import android.app.Activity
-import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 
@@ -23,9 +22,7 @@ open class CustomEditText(activity: Activity) : EditText(activity) {
                 if (actionId == EditorInfo.IME_NULL) v.imeOptions and EditorInfo.IME_MASK_ACTION
                 else actionId
 
-            Log.v("CustomEditText", "Editor action!")
             if (isSubmitAction(action)) {
-                Log.v("CustomEditText", "Submit")
                 onSubmit?.call()
                 onSubmit != null
             } else {
