@@ -7,6 +7,16 @@ import android.text.method.KeyListener
 import android.view.KeyEvent
 import android.view.View
 
+/*
+Input type is a bitfield consisting of a "class" (text, number, phone), a "variation" (name, URL,
+email), and some flags. For the most part, it just affects the IME, telling it which on-screen
+keyboard to use and how to handle autocorrect. However, the text and number classes also have a
+variation for "password," which additionally obscures the input. This makes it harder to control the
+keyboard type for passwords, since you can't set the variation to both "email" and "password" at the
+same time. It is possible to give the text field itself and the IME separate input types if you add
+a custom keyListener, so that's what this class does.
+*/
+
 class SecureEditText(activity: Activity) : CustomEditText(activity) {
     private var keyboardType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
