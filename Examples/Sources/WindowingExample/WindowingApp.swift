@@ -246,21 +246,19 @@ struct WindowingApp: App {
                     HStack {
                         Text("Window title:")
 
-                        #if !os(Android)
-                            TextField("My window", text: $title)
-                        #endif
+                        TextField("My window", text: $title)
                     }
 
                     Text("App phase: \(appPhase)")
 
-                    #if !os(Android)
-                        Toggle("Enable resizing", isOn: $resizable)
-                            .windowResizeBehavior(resizable ? .enabled : .disabled)
-                        Toggle("Enable closing", isOn: $closable)
-                            .windowDismissBehavior(closable ? .enabled : .disabled)
-                        Toggle("Enable minimizing", isOn: $minimizable)
-                            .preferredWindowMinimizeBehavior(minimizable ? .enabled : .disabled)
+                    Toggle("Enable resizing", isOn: $resizable)
+                        .windowResizeBehavior(resizable ? .enabled : .disabled)
+                    Toggle("Enable closing", isOn: $closable)
+                        .windowDismissBehavior(closable ? .enabled : .disabled)
+                    Toggle("Enable minimizing", isOn: $minimizable)
+                        .preferredWindowMinimizeBehavior(minimizable ? .enabled : .disabled)
 
+                    #if !os(Android)
                         Image(bannerImage)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
