@@ -305,6 +305,12 @@ struct WindowingApp: App {
                     Button("Disabled item") {}
                         .disabled()
                 }
+
+                Divider()
+
+                ForEach([1, 2, 3, 4, 5], id: \.self) { num in
+                    Text("ForEach \(num)")
+                }
             }
         }
 
