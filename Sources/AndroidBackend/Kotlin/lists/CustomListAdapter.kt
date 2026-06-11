@@ -1,4 +1,4 @@
-package dev.swiftcrossui.androidbackend
+package dev.swiftcrossui.androidbackend.lists
 
 import android.view.View
 import android.view.ViewGroup
@@ -31,11 +31,17 @@ class CustomListAdapter : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = views[position]
 
-        val lp =
-            if (convertView === view) convertView.layoutParams
-            else parent.generateLayoutParams(null)
-        lp.height = heights[position]
-        view.layoutParams = lp
+        view.layoutParams =
+            if (convertView === view) {
+                // Reuse the existing layoutParams when applicable in case it's a subclass of
+                // ViewGroup.LayoutParams
+                val lp = convertView.layoutParams
+                lp.height = heights[position]
+                lp.width = parent.width
+                lp
+            } else {
+                ViewGroup.LayoutParams(parent.width, heights[position])
+            }
 
         return view
     }
