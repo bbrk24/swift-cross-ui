@@ -11,27 +11,6 @@ import SwiftCrossUI
     import SwiftBundlerRuntime
 #endif
 
-#if canImport(AndroidBackend)
-    // Workaround so that things compile
-    extension View {
-        public func inspect(
-            _ inspectionPoints: InspectionPoints = .onCreate,
-            _ action: @escaping @MainActor @Sendable (Never) -> Void
-        ) -> some View {
-            self
-        }
-
-        public func inspectWindow(
-            _ action: @escaping @MainActor @Sendable (Never) -> Void
-        ) -> some View {
-            self
-        }
-    }
-
-    // TODO(bbrk24): Remove this when Android supports scroll views
-    typealias ScrollView = VStack
-#endif
-
 @main
 @HotReloadable
 struct CounterApp: App {
@@ -67,6 +46,8 @@ struct CounterApp: App {
                                     text.selectable = true
                                 #elseif canImport(Gtk3Backend)
                                     text.selectable = true
+                                #elseif canImport(AndroidBackend)
+                                    text.setTextIsSelectable(true)
                                 #endif
                             }
 
@@ -89,6 +70,8 @@ struct CounterApp: App {
                                 button.css.set(property: .backgroundColor(.init(1, 0, 0)))
                             #elseif canImport(Gtk3Backend)
                                 button.css.set(property: .backgroundColor(.init(1, 0, 0)))
+                            #elseif canImport(AndroidBackend)
+                                button.setBackgroundColor(Int32(bitPattern: 0xffff0000))
                             #endif
                         }
                     }
@@ -158,6 +141,8 @@ struct CounterApp: App {
                             #elseif canImport(Gtk3Backend)
                                 textField.hasFrame = false
                                 textField.css.set(property: .backgroundColor(.init(0, 0, 1)))
+                            #elseif canImport(AndroidBackend)
+                                textField.setBackgroundColor(Int32(bitPattern: 0xff0000ff))
                             #endif
                         }
 
