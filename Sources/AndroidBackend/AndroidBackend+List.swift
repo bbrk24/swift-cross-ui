@@ -39,10 +39,10 @@ class ListItemSelectedListener: JavaObject {
     func setAction(_ action: SwiftAction?)
 }
 
+// swiftlint:disable force_try
 extension AndroidBackend: BackendFeatures.SelectableListViews {
     public func createSelectableListView() -> Widget {
         let absListViewClass = try! JavaClass<AndroidKit.AbsListView>()
-        let Rcolor = try! JavaClass<AndroidKit.R.color>()
 
         let listView = AndroidKit.ListView(
             Self.activity,
