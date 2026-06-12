@@ -3,6 +3,7 @@ package dev.swiftcrossui.androidbackend.lists
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ListView
 
 // All the existing concrete adapters require an XML resource ID.
 class CustomListAdapter : BaseAdapter() {
@@ -31,16 +32,18 @@ class CustomListAdapter : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = views[position]
 
+        val height = heights[position] - (parent as ListView).dividerHeight
+
         view.layoutParams =
             if (convertView === view) {
                 // Reuse the existing layoutParams when applicable in case it's a subclass of
                 // ViewGroup.LayoutParams
                 val lp = convertView.layoutParams
-                lp.height = heights[position]
+                lp.height = height
                 lp.width = parent.width
                 lp
             } else {
-                ViewGroup.LayoutParams(parent.width, heights[position])
+                ViewGroup.LayoutParams(parent.width, height)
             }
 
         return view

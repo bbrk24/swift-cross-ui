@@ -76,8 +76,6 @@ extension AndroidBackend: BackendFeatures.SelectableListViews {
     }
 
     public func baseItemPadding(ofSelectableListView listView: Widget) -> EdgeInsets {
-        // TODO(bbrk24): Technically, this "intrinsic padding" is present on all
-        //   but one item, because it's actually a divider
         let density = listView.getResources().getDisplayMetrics().density
 
         let dividerHeightPx = listView.as(AndroidKit.ListView.self)!.getDividerHeight()
