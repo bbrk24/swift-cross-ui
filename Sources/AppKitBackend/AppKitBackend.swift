@@ -492,6 +492,10 @@ public final class AppKitBackend: FullAppBackend {
         widget.layer?.backgroundColor = color.nsColor.cgColor
     }
 
+    public func createCornerRadiusContainer(wrapping child: Widget) -> Widget {
+        child
+    }
+
     public func setCornerRadius(of widget: Widget, to radius: Int) {
         widget.clipsToBounds = true
         widget.wantsLayer = true
