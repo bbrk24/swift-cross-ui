@@ -48,7 +48,4 @@ class CustomListAdapter : BaseAdapter() {
 
         return view
     }
-
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
-        getView(position, convertView, parent)
 }
