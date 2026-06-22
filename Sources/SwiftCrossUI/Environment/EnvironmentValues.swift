@@ -444,6 +444,10 @@ extension EnvironmentValues {
 
     /// Whether the current device has a circular screen. Primarily Android smart watches.
     @Entry public var isCircularScreen: Bool = false
+
+    /// The device class of the current device.
+    @MainActor
+    public var deviceClass: DeviceClass { backend.deviceClass }
 }
 
 /// A key that can be used to extend the environment with new properties.
