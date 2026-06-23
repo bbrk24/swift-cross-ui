@@ -27,7 +27,7 @@ class CustomSlider(activity: Activity) : Slider(activity) {
         } else {
             stepSize = BigDecimal.valueOf(1L, places).toFloat()
         }
-        
+
         if (mathContext.precision != places) {
             mathContext = MathContext(places, RoundingMode.HALF_EVEN)
             setValue(value)

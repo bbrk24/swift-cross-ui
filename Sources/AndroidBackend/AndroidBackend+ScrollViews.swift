@@ -1,7 +1,7 @@
 import AndroidKit
 import SwiftCrossUI
 
-extension AndroidBackend: BackendFeatures.ScrollContainers {
+extension AndroidBackend {
     public var scrollBarWidth: Int { 0 }
 
     public func createScrollContainer(for child: Widget) -> Widget {

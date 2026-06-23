@@ -78,9 +78,7 @@ extension EnvironmentValues {
     @Entry public var jniEnv: UnsafeMutablePointer<JNIEnv?>? = nil
 }
 
-// TODO: Implement the rest of `BaseAppBackend` so we can move off of `BaseStubs`
-
-public final class AndroidBackend: BackendFeatures.BaseStubs {
+public final class AndroidBackend: BaseAppBackend {
     public final class Window {
         var content: Widget?
     }
@@ -486,5 +484,28 @@ public final class AndroidBackend: BackendFeatures.BaseStubs {
         let width = Double(widget.getMeasuredWidth()) / environment.windowScaleFactor
         let height = Double(widget.getMeasuredHeight()) / environment.windowScaleFactor
         return SIMD2(Int(width.rounded(.up)), Int(height.rounded(.up)))
+    }
+
+    public func createSplitView(leadingChild: Widget, trailingChild: Widget) -> Widget {
+        fatalError("\(Self.self): \(#function) not implemented")
+    }
+
+    public func setResizeHandler(
+        ofSplitView splitView: Widget,
+        to action: @escaping () -> Void
+    ) {
+        fatalError("\(Self.self): \(#function) not implemented")
+    }
+
+    public func sidebarWidth(ofSplitView splitView: Widget) -> Int {
+        fatalError("\(Self.self): \(#function) not implemented")
+    }
+
+    public func setSidebarWidthBounds(
+        ofSplitView splitView: Widget,
+        minimum minimumWidth: Int,
+        maximum maximumWidth: Int
+    ) {
+        fatalError("\(Self.self): \(#function) not implemented")
     }
 }

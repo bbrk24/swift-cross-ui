@@ -2,7 +2,7 @@ import AndroidKit
 import SwiftCrossUI
 
 // swiftlint:disable force_try
-extension AndroidBackend: BackendFeatures.Pickers {
+extension AndroidBackend {
     public var supportedPickerStyles: [BackendPickerStyle] {
         [.menu, .radioGroup, .wheel]
     }
