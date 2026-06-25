@@ -20,7 +20,7 @@ extension AndroidBackend {
         slider.setAction(SwiftAction(environment: Self.env) {
             onChange(Double(slider.getValue()))
         })
-        slider.setBounds(min: minimum, max: maximum, places: Int32(decimalPlaces))
+        slider.setBounds(min: Float(minimum), max: Float(maximum), places: Int32(decimalPlaces))
     }
 
     public func setValue(ofSlider slider: Widget, to value: Double) {

@@ -13,14 +13,14 @@ class CustomSlider: JavaObject {
     func setAction(_ action: SwiftAction?)
 
     @JavaMethod
-    func setBounds(min: Double, max: Double, places: Int32)
-
-    @JavaMethod
-    func setValue(_ value: Float)
+    func setBounds(min: Float, max: Float, places: Int32)
 
     // Inherited from Slider
     @JavaMethod
     func getValue() -> Float
+
+    @JavaMethod
+    func setValue(_ value: Float)
 
     // Inherited from BaseSlider
     @JavaMethod
