@@ -166,7 +166,7 @@ struct ControlsApp: App {
                                 Text("You chose: \(flavor ?? "Nothing yet!")")
                             }
 
-                            #if !os(tvOS) && !canImport(AndroidBackend)
+                            #if !os(tvOS)
                                 VStack {
                                     Text("Selected date: \(date)")
 
