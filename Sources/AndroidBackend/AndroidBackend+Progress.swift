@@ -3,6 +3,8 @@ import SwiftCrossUI
 import SwiftJava
 
 // swiftlint:disable force_try
+
+// implements BackendFeatures.ProgressBars & BackendFeatures.ProgressSpinners
 extension AndroidBackend {
     public func createProgressBar() -> Widget {
         let Rstyle = try! JavaClass<AndroidKit.R.style>()

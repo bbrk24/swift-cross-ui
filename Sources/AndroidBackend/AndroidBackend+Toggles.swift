@@ -1,6 +1,7 @@
 import AndroidKit
 import SwiftCrossUI
 
+// implements BackendFeatures.ToggleButtons & BackendFeatures.Checkboxes & BackendFeatures.Switches
 extension AndroidBackend {
     public var requiresToggleSwitchSpacer: Bool { false }
 

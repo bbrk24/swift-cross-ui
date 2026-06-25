@@ -1,6 +1,7 @@
 import SwiftCrossUI
 import AndroidKit
 
+// implements BackendFeatures.Sliders
 extension AndroidBackend {
     public func createSlider() -> Widget {
         CustomSlider(Self.activity, environment: Self.env).as(AndroidKit.View.self)!

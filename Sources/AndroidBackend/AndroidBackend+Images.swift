@@ -22,6 +22,8 @@ extension AndroidKit.ImageView {
 }
 
 // swiftlint:disable force_try
+
+// implements BackendFeatures.Images
 extension AndroidBackend {
     public var requiresImageUpdateOnScaleFactorChange: Bool { false }
 

@@ -40,6 +40,8 @@ class ListItemSelectedListener: JavaObject {
 }
 
 // swiftlint:disable force_try
+
+// implements BackendFeatures.SelectableListViews
 extension AndroidBackend {
     public func createSelectableListView() -> Widget {
         let absListViewClass = try! JavaClass<AndroidKit.AbsListView>()
