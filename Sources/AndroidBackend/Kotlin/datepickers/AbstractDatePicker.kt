@@ -25,6 +25,10 @@ abstract class AbstractDatePicker(context: Context) : LinearLayout(context) {
 
     protected abstract var currentValue: LocalDateTime
 
+    init {
+        orientation = LinearLayout.HORIZONTAL
+    }
+
     protected abstract fun applyRange(min: LocalDateTime, max: LocalDateTime)
 
     var value: LocalDateTime
@@ -45,5 +49,11 @@ abstract class AbstractDatePicker(context: Context) : LinearLayout(context) {
 
         dateView.visibility = if (components and COMPONENT_DATE != 0) View.VISIBLE else View.GONE
         timeView.visibility = if (components and COMPONENT_TIME != 0) View.VISIBLE else View.GONE
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        dateView.isEnabled = enabled
+        timeView.isEnabled = enabled
+        super.setEnabled(enabled)
     }
 }

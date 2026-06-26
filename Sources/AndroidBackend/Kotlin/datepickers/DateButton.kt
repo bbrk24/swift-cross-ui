@@ -7,18 +7,15 @@ import android.icu.util.GregorianCalendar
 import android.icu.util.ULocale
 import android.os.Bundle
 import android.widget.Button
-import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.FragmentActivity
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class DateButton(private val activity: FragmentActivity) : Button(activity) {
-    companion object {
-        private fun LocalDate.toEpochMillis() = toEpochDay() * 86400000L
-    }
-
-    private var minDate = LocalDate.MIN.toEpochMillis()
-    private var maxDate = LocalDate.MAX.toEpochMillis()
+    private var minDate = Constants.defaultMinDate
+    private var maxDate = Constants.defaultMaxDate
 
     private var _value = LocalDate.now()
 
@@ -61,9 +58,9 @@ class DateButton(private val activity: FragmentActivity) : Button(activity) {
         )
     }
 
-    fun setRange(min: LocalDate, max: LocalDate) {
-        minDate = min.toEpochMillis()
-        maxDate = max.toEpochMillis()
+    fun setRange(min: LocalDateTime, max: LocalDateTime) {
+        minDate = Constants.EPOCH.until(min, ChronoUnit.MILLIS)
+        maxDate = Constants.EPOCH.until(max, ChronoUnit.MILLIS)
 
         dialogFragment.datePicker?.minDate = minDate
         dialogFragment.datePicker?.maxDate = maxDate
@@ -76,7 +73,8 @@ class DateButton(private val activity: FragmentActivity) : Button(activity) {
 
         lateinit var button: DateButton
 
-        val datePicker get() = (dialog as DatePickerDialog?)?.datePicker
+        val datePicker
+            get() = (dialog as DatePickerDialog?)?.datePicker
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val dialog =

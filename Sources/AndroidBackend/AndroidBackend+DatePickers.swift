@@ -6,10 +6,6 @@ import JavaTime
 
 // swiftlint:disable force_try
 extension AndroidBackend: BackendFeatures.DatePickers {
-    public nonisolated var supportedDatePickerStyles: [DatePickerStyle] {
-        [.automatic, .compact]
-    }
-
     public func createDatePicker() -> Widget {
         AndroidKit.FrameLayout(Self.activity, environment: Self.env)
     }
@@ -76,36 +72,52 @@ extension AndroidBackend: BackendFeatures.DatePickers {
 
         switch environment.datePickerStyle {
             case .automatic, .compact:
-                if datePicker?.is(CompactDatePicker.self) != true {
+                var compactDatePicker = datePicker?.as(CompactDatePicker.self)
+
+                if compactDatePicker == nil {
                     frame.removeAllViews()
-                    datePicker = CompactDatePicker(
+                    compactDatePicker = CompactDatePicker(
                         Self.activity.as(FragmentActivity.self)!,
                         environment: Self.env
                     )
-                    frame.addView(datePicker!)
+                    datePicker = compactDatePicker
+                    frame.addView(compactDatePicker!)
                 }
 
-                datePicker!.as(CompactDatePicker.self)!
+                compactDatePicker!
                     .setForegroundColor(
                         environment.suggestedForegroundColor.resolve(in: environment).asColorInt()
                     )
             case .graphical:
-                fatalError("TODO")
+                if datePicker?.is(GraphicalDatePicker.self) != true {
+                    frame.removeAllViews()
+                    datePicker = GraphicalDatePicker(
+                        Self.activity,
+                        environment: Self.env
+                    )
+                    frame.addView(datePicker!)
+                }
             case .wheel:
+                // TODO(bbrk24): Once swift-bundler supports XML resources in libraries, implement
+                //   the wheel style
                 fatalError("The .wheel style is not currently supported on Android")
         }
 
-        datePicker!.setComponents(Int32(components.rawValue))
-        datePicker!.setRange(
+        guard let datePicker else {
+            preconditionFailure("datePicker must be set by switch above, but was not")
+        }
+
+        datePicker.setComponents(Int32(components.rawValue))
+        datePicker.setRange(
             min: Self.getLocalDateTime(date: range.lowerBound, timeZone: environment.timeZone),
             max: Self.getLocalDateTime(date: range.upperBound, timeZone: environment.timeZone)
         )
-        datePicker!.setValue(Self.getLocalDateTime(date: date, timeZone: environment.timeZone))
-        datePicker!.setEnabled(environment.isEnabled)
+        datePicker.setValue(Self.getLocalDateTime(date: date, timeZone: environment.timeZone))
+        datePicker.setEnabled(environment.isEnabled)
 
-        datePicker!.setAction(SwiftAction(environment: Self.env) {
+        datePicker.setAction(SwiftAction(environment: Self.env) {
             let date = Self.getFoundationDate(
-                localDateTime: datePicker!.getValue()!,
+                localDateTime: datePicker.getValue()!,
                 timeZone: environment.timeZone
             )
             onChange(date)

@@ -1,6 +1,5 @@
 package dev.swiftcrossui.androidbackend.datepickers
 
-import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
 import java.time.LocalDateTime
 
@@ -9,8 +8,6 @@ class CompactDatePicker(activity: FragmentActivity) : AbstractDatePicker(activit
     protected override val timeView = TimeButton(activity)
 
     init {
-        orientation = LinearLayout.HORIZONTAL
-
         val childAction: () -> Unit = {
             // Clamp to range before calling through to Swift
             timeView.value = value.toLocalTime()
@@ -32,14 +29,8 @@ class CompactDatePicker(activity: FragmentActivity) : AbstractDatePicker(activit
         }
 
     protected override fun applyRange(min: LocalDateTime, max: LocalDateTime) {
-        dateView.setRange(min.toLocalDate(), max.toLocalDate())
+        dateView.setRange(min, max)
         timeView.value = value.toLocalTime()
-    }
-
-    override fun setEnabled(enabled: Boolean) {
-        dateView.isEnabled = enabled
-        timeView.isEnabled = enabled
-        super.setEnabled(enabled)
     }
 
     fun setForegroundColor(color: Int) {

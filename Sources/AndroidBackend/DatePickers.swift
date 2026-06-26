@@ -37,3 +37,15 @@ class CompactDatePicker: AbstractDatePicker {
     @JavaMethod
     func setForegroundColor(_ color: Int32)
 }
+
+@JavaClass(
+    "dev.swiftcrossui.androidbackend.datepickers.GraphicalDatePicker",
+    extends: AbstractDatePicker.self
+)
+class GraphicalDatePicker: AbstractDatePicker {
+    @JavaMethod
+    @_nonoverride convenience init(
+        _ context: AndroidKit.Context!,
+        environment: JNIEnvironment? = nil
+    )
+}
