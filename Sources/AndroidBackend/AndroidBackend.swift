@@ -4,6 +4,7 @@ import SwiftCrossUI
 import AndroidKit
 import AndroidGraphics
 import AndroidBackendShim
+import Mutex
 
 // Many force tries are required for the Android backend but we don't really want them
 // anywhere else so just disable the lint rule at a file level.
@@ -88,15 +89,10 @@ public final class AndroidBackend: BaseAppBackend {
     static let stdoutPipe = Pipe()
     static let stderrPipe = Pipe()
 
-    // Thread-safety note: `_supportedDatePickerStyles` is only set in `computeRootEnvironment`;
-    // `supportedDatePickerStyles` must be `nonisolated` to satisfy the DatePickers protocol.
-    private nonisolated(unsafe) var _supportedDatePickerStyles: [DatePickerStyle] = [
-        .automatic,
-        .compact
-    ]
+    private let _supportedDatePickerStyles = Mutex<[DatePickerStyle]>([.automatic, .compact])
 
     public nonisolated var supportedDatePickerStyles: [DatePickerStyle] {
-        _supportedDatePickerStyles
+        _supportedDatePickerStyles.withLock { copy $0 }
     }
 
     // .phone is a placeholder value -- the real value is set in `computeRootEnvironment`.
@@ -321,24 +317,26 @@ public final class AndroidBackend: BaseAppBackend {
         // ~350dp wide each, so when stacked next to each other they don't fit on all tablets, and
         // even just one of them doesn't fit by itself on some phones. Watch renders them a bit
         // smaller so they almost fit, but again they don't both fit at the same time.
-        switch helpers.getDeviceClass(Self.activity) {
-            case 0:
-                deviceClass = .desktop
-                _supportedDatePickerStyles = [.automatic, .compact, .graphical]
-            case 1:
-                deviceClass = .phone
-                _supportedDatePickerStyles = [.automatic, .compact]
-            case 2:
-                deviceClass = .tablet
-                _supportedDatePickerStyles = [.automatic, .compact]
-            case 3:
-                deviceClass = .tv
-                _supportedDatePickerStyles = [.automatic, .compact, .graphical]
-            case 4:
-                deviceClass = .watch
-                _supportedDatePickerStyles = [.automatic, .compact]
-            case let x:
-                fatalError("helpers.getDeviceClass returned unexpected value \(x)")
+        _supportedDatePickerStyles.withLock { supportedDatePickerStyles in
+            switch helpers.getDeviceClass(Self.activity) {
+                case 0:
+                    deviceClass = .desktop
+                    supportedDatePickerStyles = [.automatic, .compact, .graphical]
+                case 1:
+                    deviceClass = .phone
+                    supportedDatePickerStyles = [.automatic, .compact]
+                case 2:
+                    deviceClass = .tablet
+                    supportedDatePickerStyles = [.automatic, .compact]
+                case 3:
+                    deviceClass = .tv
+                    supportedDatePickerStyles = [.automatic, .compact, .graphical]
+                case 4:
+                    deviceClass = .watch
+                    supportedDatePickerStyles = [.automatic, .compact]
+                case let x:
+                    fatalError("helpers.getDeviceClass returned unexpected value \(x)")
+            }
         }
 
         return environment
