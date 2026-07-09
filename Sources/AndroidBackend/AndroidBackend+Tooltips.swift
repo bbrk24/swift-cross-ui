@@ -6,6 +6,6 @@ extension AndroidBackend: BackendFeatures.Tooltips {
     }
 
     public func updateTooltipContainer(_ widget: Widget, tooltip: String) {
-        widget.setTooltipText(charSequence(from: tooltip))
+        widget.setTooltipText(Self.charSequence(from: tooltip))
     }
 }

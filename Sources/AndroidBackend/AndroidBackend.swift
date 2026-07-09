@@ -446,7 +446,7 @@ public final class AndroidBackend: BaseAppBackend {
     }
 
     /// Converts a Swift String to a Java CharSequence.
-    func charSequence(from string: String) -> CharSequence {
+    static func charSequence(from string: String) -> CharSequence {
         let jstring = JavaString(string, environment: Self.env)
         return jstring.as(CharSequence.self)!
     }
@@ -457,9 +457,9 @@ public final class AndroidBackend: BaseAppBackend {
         environment: EnvironmentValues,
         action: @escaping () -> Void
     ) {
-        // TODO(stackotter): Handle environment.
         let button = button.as(AndroidKit.Button.self)!
-        button.setText(charSequence(from: label))
+        button.setText(Self.charSequence(from: label))
+        button.setEnabled(environment.isEnabled)
         let listener = ViewOnClickListener(action: action, environment: Self.env)
         button.setOnClickListener(listener.as(AndroidView.View.OnClickListener.self))
         button.setAllCaps(false)

@@ -16,7 +16,7 @@ extension AndroidBackend {
         onSubmit: (() -> Void)?,
         isMultiline: Bool
     ) {
-        textField.setHint(charSequence(from: placeholder))
+        textField.setHint(Self.charSequence(from: placeholder))
         textField.setOnChange(
             SwiftAction(environment: Self.env) {
                 // Don't take textField as a weak reference, because otherwise it
