@@ -2,6 +2,7 @@ import SwiftCrossUI
 import AndroidKit
 import SwiftJava
 
+// swiftlint:disable force_try
 extension AndroidKit.PopupMenu {
     // Workaround for the fact that you can't put @JavaMethod inits in extensions
     static func construct(
@@ -96,7 +97,7 @@ extension AndroidBackend: BackendFeatures.AttachedMenus {
                         Int32(index),
                         charSequence(from: label)
                     )
-                        .setEnabled(environment.isEnabled)!
+                    .setEnabled(environment.isEnabled)!
 
                     if environment.isEnabled {
                         let onClick = CustomMenuItemClickListener(
@@ -115,9 +116,9 @@ extension AndroidBackend: BackendFeatures.AttachedMenus {
                         Int32(index),
                         charSequence(from: label)
                     )
-                        .setEnabled(environment.isEnabled)
-                        .setCheckable(true)
-                        .setChecked(value)!
+                    .setEnabled(environment.isEnabled)
+                    .setCheckable(true)
+                    .setChecked(value)!
 
                     if environment.isEnabled {
                         let onClick = CustomMenuItemClickListener(
