@@ -37,7 +37,7 @@ jobs:
           if [ '${{ github.ref }}' == 'refs/heads/main' ]; then
             echo '${{ matrix.platform }}=true' >>"$GITHUB_OUTPUT"
           elif
-            git diff --exit-code --name-only HEAD '${{ github.base_ref }}' -- \
+            git diff --exit-code --name-only HEAD "origin/$GITHUB_BASE_REF" -- \
               Examples/ .github/actions/ .github/workflows/build-test-and-docs.yml Package.swift \
               Package.resolved Sources/SwiftCrossUI*/ Sources/DefaultBackend/ Sources/Bundler.toml \
               ${{ matrix.paths }}
