@@ -14,16 +14,18 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        - platform: android
-          paths: 'Sources/AndroidBackend/ Sources/AndroidBackendShim/'
-        - platform: linux
-          paths: 'Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
-        - platform: macos
-          paths: 'Sources/AppKitBackend/ Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
-        - platform: uikit
-          paths: 'Sources/UIKitBackend/'
-        - platform: windows
-          paths: 'Sources/WinUIBackend/ Sources/WinUIInterop/'
+        platform: [android, linux, macos, uikit, windows]
+        include:
+          - platform: android
+            paths: 'Sources/AndroidBackend/ Sources/AndroidBackendShim/'
+          - platform: linux
+            paths: 'Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
+          - platform: macos
+            paths: 'Sources/AppKitBackend/ Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
+          - platform: uikit
+            paths: 'Sources/UIKitBackend/'
+          - platform: windows
+            paths: 'Sources/WinUIBackend/ Sources/WinUIInterop/'
     steps:
       - uses: actions/checkout@v3
       - name: Check files
