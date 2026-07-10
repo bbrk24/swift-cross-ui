@@ -10,13 +10,54 @@ on:
   workflow_dispatch:
 
 jobs:
+  check_file_changes:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        - platform: android
+          paths: 'Sources/AndroidBackend/ Sources/AndroidBackendShim/'
+        - platform: linux
+          paths: 'Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
+        - platform: macos
+          paths: 'Sources/AppKitBackend/ Sources/*Gtk*/ Tests/ Scripts/test.sh vcpkg.json'
+        - platform: uikit
+          paths: 'Sources/UIKitBackend/'
+        - platform: windows
+          paths: 'Sources/WinUIBackend/ Sources/WinUIInterop/'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check files
+        id: check_files
+        run: |
+          set -x
+          if [ '${{ github.ref }}' == 'refs/heads/main' ]; then
+            echo '${{ matrix.platform }}=true' >>"$GITHUB_OUTPUT"
+          elif
+            git diff --exit-code --name-only "$GITHUB_HEAD_REF" "$GITHUB_BASE_REF" -- \
+              Examples/ .github/actions/ .github/workflows/build-test-and-docs.yml Package.swift \
+              Package.resolved Sources/SwiftCrossUI*/ Sources/DefaultBackend/ Sources/Bundler.toml \
+              ${{ matrix.paths }}
+          then
+            echo '${{ matrix.platform }}=false' >>"$GITHUB_OUTPUT"
+          else
+            echo '${{ matrix.platform }}=true' >>"$GITHUB_OUTPUT"
+          fi
+    outputs:
+      android: ${{ steps.check_files.outputs.android }}
+      linux: ${{ steps.check_files.outputs.linux }}
+      macos: ${{ steps.check_files.outputs.macos }}
+      uikit: ${{ steps.check_files.outputs.uikit }}
+      windows: ${{ steps.check_files.outputs.windows }}
+
   macos:
     runs-on: macos-15
+    needs: check_file_changes
+    if: ${{ needs.check_file_changes.outputs.macos == 'true' }}
     steps:
-    - name: Setup Xcode 16.3 (Swift 6.1)
+    - name: Setup Xcode 16.4 (Swift 6.1.2)
       uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
-        xcode-version: '16.3'
+        xcode-version: '16.4'
 
     - name: Swift version
       run: swift --version
@@ -69,16 +110,18 @@ jobs:
 
   android:
     runs-on: macos-15
+    needs: check_file_changes
+    if: ${{ needs.check_file_changes.outputs.android == 'true' }}
     env:
       # Release and checksum retrieved from https://www.swift.org/api/v1/install/dev/6.3/android-sdk.json
       SWIFT_RELEASE: swift-6.3-DEVELOPMENT-SNAPSHOT-2026-05-01-a
       SWIFT_ANDROID_SDK_CHECKSUM: 27a0e63264d1b8512522d3a07407ae3d2774eb07d28279ef58e96d1dc2ab720d
       SWIFT_BUNDLER_REVISION: e6909f16ae8b06dc956ba09a3cee1c4863c165bd
     steps:
-    - name: Setup Xcode 16.3 (Swift 6.1)
+    - name: Setup Xcode 16.4 (Swift 6.1.2)
       uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
-        xcode-version: '16.3'
+        xcode-version: '16.4'
 
     - name: Swift version
       run: swift --version
@@ -152,9 +195,20 @@ jobs:
         cd Examples
         ../swift-bundler bundle CounterExample --platform Android
         ../swift-bundler bundle ControlsExample --platform Android
+        ../swift-bundler bundle AdvancedCustomizationExample --platform Android
+        ../swift-bundler bundle ColorsExample --platform Android
+        ../swift-bundler bundle FontsExample --platform Android
+        ../swift-bundler bundle GradientsExample --platform Android
+        ../swift-bundler bundle PathsExample --platform Android
+        ../swift-bundler bundle RandomNumberGeneratorExample --platform Android
+        ../swift-bundler bundle TapGesturesExample --platform Android
+        ../swift-bundler bundle WebViewExample --platform Android
+        ../swift-bundler bundle WindowingExample --platform Android
 
   uikit:
     runs-on: macos-15
+    needs: check_file_changes
+    if: ${{ needs.check_file_changes.outputs.uikit == 'true' }}
     strategy:
       matrix:
         device-type:
@@ -237,6 +291,8 @@ jobs:
 
   uikit-catalyst:
     runs-on: macos-15
+    needs: check_file_changes
+    if: ${{ needs.check_file_changes.outputs.uikit == 'true' }}
     steps:
     - name: Setup Xcode 16.4 (Swift 6.1.2)
       uses: maxim-lobanov/setup-xcode@v1.6.0
@@ -284,6 +340,8 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    needs: check_file_changes
+    if: ${{ needs.check_file_changes.outputs.windows == 'true' }}
     defaults:
       run: # Use powershell because bash is not supported: https://github.com/compnerd/gha-setup-swift/issues/18#issuecomment-1705524890
         shell: pwsh
@@ -355,6 +413,8 @@ jobs:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
+    if: ${{ needs.check_file_changes.outputs.linux == 'true' }}
+    needs: check_file_changes
 
     steps:
     # The Ubuntu image comes with Swift, but it's installed as root and DocC
