@@ -25,7 +25,7 @@ jobs:
           - platform: uikit
             paths: 'Sources/UIKitBackend/'
           - platform: windows
-            paths: 'Sources/WinUIBackend/ Sources/WinUIInterop/'
+            paths: 'Sources/WinUIBackend/ Sources/WinUIInterop/ vcpkg.json'
     steps:
       - uses: actions/checkout@v6
         with:
