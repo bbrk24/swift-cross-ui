@@ -305,9 +305,14 @@ public final class AndroidBackend: BaseAppBackend {
            let timeZone = Foundation.TimeZone(identifier: identifier)
         {
             environment.timeZone = timeZone
-            environment.calendar = getCurrentCalendar(timeZone: timeZone)
+
+            let (calendar, locale) = getCurrentCalendarAndLocale(timeZone: timeZone)
+            environment.calendar = calendar
+            environment.locale = locale
         } else {
-            environment.calendar = getCurrentCalendar(timeZone: nil)
+            let (calendar, locale) = getCurrentCalendarAndLocale(timeZone: nil)
+            environment.calendar = calendar
+            environment.locale = locale
         }
 
         environment

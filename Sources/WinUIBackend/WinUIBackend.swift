@@ -463,6 +463,7 @@ public final class WinUIBackend:
             defaultEnvironment
                 .with(\.colorScheme, isLight ? .light : .dark)
                 .with(\.appPhase, windows.contains(where: \.isActive) ? .active : .inactive)
+                .with(\.locale, .windowsCurrent)
     }
 
     public func setRootEnvironmentChangeHandler(
