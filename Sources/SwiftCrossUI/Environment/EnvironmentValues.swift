@@ -453,6 +453,27 @@ extension EnvironmentValues {
     /// Whether the current device has a circular screen. Primarily Android smart watches.
     @Entry public var isCircularScreen: Bool = false
 
+    /// The display style used by ``Button``.
+    @Entry public var buttonStyle: ButtonStyle?
+
+    /// The default button style as declared by the backend.
+    @MainActor
+    public var defaultButtonStyle: ButtonStyle {
+        backend.defaultButtonStyle()
+    }
+
+    /// The resolved ``ButtonStyle``. Either ``buttonStyle``, or ``defaultButtonStyle`` if nil.
+    @MainActor
+    public var resolvedButtonStyle: ButtonStyle {
+        buttonStyle ?? defaultButtonStyle
+    }
+
+    /// The amount of padding that the current backend applies to the labels of buttons with the current ``ButtonStyle``.
+    @MainActor
+    public var buttonPadding: SIMD2<Int> {
+        backend.buttonPadding(in: self)
+    }
+
     /// The device class of the current device.
     @MainActor
     public var deviceClass: DeviceClass { backend.deviceClass }
