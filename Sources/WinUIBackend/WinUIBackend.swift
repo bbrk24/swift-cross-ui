@@ -459,11 +459,14 @@ public final class WinUIBackend:
         let blue = Int(backgroundColor.b)
         let isLight = 5 * green + 2 * red + blue > 8 * 128
 
+        let locale = Foundation.Locale.windowsCurrent
+
         return
             defaultEnvironment
                 .with(\.colorScheme, isLight ? .light : .dark)
                 .with(\.appPhase, windows.contains(where: \.isActive) ? .active : .inactive)
-                .with(\.locale, .windowsCurrent)
+                .with(\.locale, locale)
+                .with(\.calendar, locale.calendar)
     }
 
     public func setRootEnvironmentChangeHandler(

@@ -100,6 +100,29 @@ extension Foundation.Locale {
 
         localeComponents.timeZone = .current
 
+        switch getLocaleInfoInt(LOCALE_ICALENDARTYPE) {
+            case DWORD(CAL_GREGORIAN), DWORD(CAL_GREGORIAN_US), DWORD(CAL_GREGORIAN_ME_FRENCH),
+                 DWORD(CAL_GREGORIAN_ARABIC), DWORD(CAL_GREGORIAN_XLIT_ENGLISH),
+                 DWORD(CAL_GREGORIAN_XLIT_FRENCH):
+                localeComponents.calendar = .gregorian
+            case DWORD(CAL_JAPAN):
+                localeComponents.calendar = .japanese
+            case DWORD(CAL_TAIWAN):
+                localeComponents.calendar = .republicOfChina
+            case DWORD(CAL_HIJRI):
+                localeComponents.calendar = .islamicTabular
+            case DWORD(CAL_HEBREW):
+                localeComponents.calendar = .hebrew
+            case DWORD(CAL_UMALQURA):
+                localeComponents.calendar = .islamicUmmAlQura
+            case let id?:
+                // Includes undeclared constants as well as CAL_KOREA and CAL_THAI
+                logger.notice("Unsupported calendar type \(id).")
+            default:
+                // nil -- grabbing the calendar failed
+                break
+        }
+
         return Foundation.Locale(components: localeComponents)
     }
 }
