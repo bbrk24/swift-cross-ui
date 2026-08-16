@@ -211,12 +211,12 @@ jobs:
 
     - name: Build AndroidBackend and extract symbol graphs
       uses: ./.github/actions/extract-symbol-graphs
-      working-directory: Examples
       with:
         target: AndroidBackend
         upload: true
-        swiftpm-exe: ~/swiftly/.bin/swift
-        swifptm-args: --swift-sdk aarch64-unknown-linux-android28
+        swiftpm-exe: /Users/runner/.swiftly/bin/swift
+        swiftpm-args: --swift-sdk aarch64-unknown-linux-android28
+        working-directory: Examples
 
   uikit:
     runs-on: macos-15
@@ -511,7 +511,7 @@ jobs:
 
   assemble-docs:
     runs-on: macos-15
-    needs: [macos, uikit, windows, linux]
+    needs: [macos, uikit, windows, linux, android]
 
     steps:
     - name: Setup Xcode version
