@@ -301,19 +301,19 @@ public final class AndroidBackend: BaseAppBackend {
             .getConfiguration()
             .isScreenRound()
 
-        if let identifier = helpers.getTimeZoneIdentifier()?.toString(),
-           let timeZone = Foundation.TimeZone(identifier: identifier)
-        {
-            environment.timeZone = timeZone
+        var timeZone: Foundation.TimeZone?
 
-            let (calendar, locale) = getCurrentCalendarAndLocale(timeZone: timeZone)
-            environment.calendar = calendar
-            environment.locale = locale
-        } else {
-            let (calendar, locale) = getCurrentCalendarAndLocale(timeZone: nil)
-            environment.calendar = calendar
-            environment.locale = locale
+        if let identifier = helpers.getTimeZoneIdentifier()?.toString() {
+            timeZone = Foundation.TimeZone(identifier: identifier)
         }
+
+        if let timeZone {
+            environment.timeZone = timeZone
+        }
+
+        let (calendar, locale) = getCurrentCalendarAndLocale(timeZone: timeZone)
+        environment.calendar = calendar
+        environment.locale = locale
 
         environment
             .appStorageProvider = SharedPreferencesAppStorageProvider(activity: Self.activity)
