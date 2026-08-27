@@ -45,6 +45,7 @@ struct ControlsApp: App {
     @State var isProgressViewResizable = true
     @State var pickerStyle: BuiltInPickerStyle? = .automatic
     @State var buttonStyle: ButtonStyle? = nil
+    @State var color: Color = .red
 
     @Environment(\.supportedDatePickerStyles) var supportedDatePickerStyles
     @Environment(\.isPickerStyleSupported) var isPickerStyleSupported
@@ -200,6 +201,20 @@ struct ControlsApp: App {
                                     }
                                 }
                             #endif
+                        #endif
+
+                        #if !os(tvOS) && !canImport(AndroidBackend)
+                            if #available(iOS 14, macCatalyst 14, *) {
+                                VStack {
+                                    ColorPicker("Choose a color:", selection: $color)
+
+                                    HStack {
+                                        Text("You chose:")
+
+                                        color.frame(maxWidth: 50, maxHeight: 20)
+                                    }
+                                }
+                            }
                         #endif
                     }.padding().disabled(!enabled)
 
