@@ -13,12 +13,12 @@ extension BackendFeatures {
         /// - Parameters:
         ///   - colorPicker: The color picker widget to update.
         ///   - supportsOpacity: If `false`, do not allow the user to change the alpha value of the
-        ///   color. If the color provided to ``setValue(ofColorPicker:to:)`` has an alpha value
-        ///   less than 1, leave it at that value.
+        ///     color. If the color provided to ``setValue(ofColorPicker:to:)`` has an alpha value
+        ///     less than 1, leave it at that value.
         ///   - environment: The current environment.
         ///   - onChange: The action to perform when the selected color changes. This handler
-        ///   replaces any existing change handlers and is called whenever a selection is made, even
-        ///   if the same color is picked again.
+        ///     replaces any existing change handlers and is called whenever a selection is made,
+        ///     even if the same color is picked again.
         func updateColorPicker(
             _ colorPicker: Widget,
             supportsOpacity: Bool,

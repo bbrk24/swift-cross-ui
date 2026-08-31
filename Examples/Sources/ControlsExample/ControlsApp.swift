@@ -82,17 +82,19 @@ struct ControlsApp: App {
                             Text("Count: \(count)")
                         }
 
-                        VStack {
-                            Text("Menu button")
-                            Menu("Menu") {
-                                Button("Button item") {
-                                    print("Button item clicked")
-                                }
-                                Divider()
-                                Toggle("Toggle item", isOn: $menuToggleState)
-                                Menu("Submenu") {
-                                    Text("Text item 1")
-                                    Text("Text item 2")
+                        if #available(iOS 14, macCatalyst 14, tvOS 17, *) {
+                            VStack {
+                                Text("Menu button")
+                                Menu("Menu") {
+                                    Button("Button item") {
+                                        print("Button item clicked")
+                                    }
+                                    Divider()
+                                    Toggle("Toggle item", isOn: $menuToggleState)
+                                    Menu("Submenu") {
+                                        Text("Text item 1")
+                                        Text("Text item 2")
+                                    }
                                 }
                             }
                         }
