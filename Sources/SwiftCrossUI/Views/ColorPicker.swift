@@ -57,7 +57,7 @@ extension ColorPicker: View {
     }
 }
 
-internal struct ColorPickerImplementation: ElementaryView {
+struct ColorPickerImplementation: ElementaryView {
     @Binding var selection: Color
     var supportsOpacity: Bool
 

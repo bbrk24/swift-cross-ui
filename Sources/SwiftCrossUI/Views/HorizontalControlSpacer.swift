@@ -1,6 +1,6 @@
 /// A view that behaves like a spacer on certain device classes, for `HStack`-based controls like
 /// ``ColorPicker`` and switch-style ``Toggle``.
-internal struct HorizontalControlSpacer: View {
+struct HorizontalControlSpacer: View {
     @Environment(\.deviceClass) private var deviceClass
 
     var body: some View {
