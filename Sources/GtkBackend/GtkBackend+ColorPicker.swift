@@ -16,8 +16,8 @@ extension GtkBackend: BackendFeatures.ColorPickers {
         let colorButton = colorPicker as! CustomColorButton
         colorButton.sensitive = environment.isEnabled
         colorButton.useAlpha = supportsOpacity
-        colorButton.colorSet = { [unowned colorButton] (_) in
-            let rgba = colorButton.rgba
+        colorButton.colorSet = {
+            let rgba = ($0 as! CustomColorButton).rgba
             onChange(
                 Color.Resolved(
                     red: rgba.red,
