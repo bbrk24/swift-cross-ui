@@ -23,7 +23,7 @@ extension WinUIBackend: BackendFeatures.ColorPickers {
         let colorButton = colorPicker as! ColorButton
         colorButton.supportsOpacity = supportsOpacity
         colorButton.isEnabled = environment.isEnabled
-        colorButton.onChange = { onChange(.init(uwpColor: $0)) }
+        colorButton.onChange = { onChange(SwiftCrossUI.Color.Resolved(uwpColor: $0)) }
     }
 
     public func setValue(ofColorPicker colorPicker: Widget, to color: SwiftCrossUI.Color.Resolved) {
