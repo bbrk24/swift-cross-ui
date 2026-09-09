@@ -181,6 +181,10 @@ let package = Package(
             url: "https://github.com/swhitty/swift-mutex",
             .upToNextMinor(from: "0.0.6")
         ),
+        .package(
+            url: "https://github.com/apple/swift-collections",
+            .upToNextMajor(from: "1.5.0")
+        ),
         // .package(
         //     url: "https://github.com/stackotter/TermKit",
         //     revision: "163afa64f1257a0c026cc83ed8bc47a5f8fc9704"
@@ -203,14 +207,6 @@ let package = Package(
                 .product(name: "ImageFormats", package: "swift-image-formats"),
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Mutex", package: "swift-mutex"),
-
-                // This import is purely required to fix a linker issue and a plugin build
-                // error that occur on macOS when building for non-Android platforms now that
-                // we've added the AndroidBackend. Providing the '--disable-experimental-prebuilts'
-                // flag when building SwiftCrossUI apps doesn't seem to be sufficient to fix
-                // the issues, even though I would've thought that was the effect that adding
-                // this dependency has.
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
             ],
             exclude: [
                 "Builders/ViewBuilder.swift.gyb",
@@ -412,6 +408,7 @@ if androidBackendSupported {
                 "SwiftCrossUI",
                 "AndroidBackendShim",
                 .product(name: "Mutex", package: "swift-mutex"),
+                .product(name: "DequeModule", package: "swift-collections"),
 
                 // These two dependencies have to be marked as only included on Android
                 // (even though this target is only used on Android) because SwiftPM requires
