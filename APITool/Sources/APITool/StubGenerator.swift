@@ -118,6 +118,7 @@ enum StubGenerator {
 
     private static func output(decls: [Syntax], to file: URL) throws {
         let stub = header + decls.map(\.description).joined(separator: "\n")
+            .replacingOccurrences(of: "::", with: ".")
             .replacingOccurrences(of: "SwiftUI.", with: "")
             .replacingOccurrences(of: "SwiftUICore.", with: "")
             .replacingOccurrences(of: "_Concurrency.", with: "")

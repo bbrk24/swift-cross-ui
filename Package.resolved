@@ -1,5 +1,5 @@
 {
-  "originHash" : "3e4c79869c56005637fdac7f6849fc0427482d03091e2fbdd0ce97043530c8a1",
+  "originHash" : "2c46834fdcd2f70a6845780e96bc14df15980c1feca3cb3669a4c741a6a404d0",
   "pins" : [
     {
       "identity" : "jpeg",
@@ -89,6 +89,24 @@
       "state" : {
         "revision" : "71c7c9a761d1ca6ed4ccb6ced040fe1c1a39e8e7",
         "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "swift-java",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stackotter/swift-java",
+      "state" : {
+        "revision" : "e04c0ed6af98936ca6300e94be9a19869df418a2",
+        "version" : "0.5.1"
+      }
+    },
+    {
+      "identity" : "swift-java-jni-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-java-jni-core",
+      "state" : {
+        "revision" : "b440a0be98381550cf189c903782e817619ffa05",
+        "version" : "0.5.1"
       }
     },
     {
