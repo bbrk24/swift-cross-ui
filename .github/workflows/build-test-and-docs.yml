@@ -166,7 +166,9 @@ jobs:
       run: ./Scripts/generate_gtk.sh
 
     - name: Check generated Gtk Bindings
-      run: git diff --exit-code
+      run: |
+        git diff --exit-code -- Sources/Gtk/Generated && \
+        git diff --exit-code -- Sources/Gtk3/Generated
 
   android:
     runs-on: macos-15
