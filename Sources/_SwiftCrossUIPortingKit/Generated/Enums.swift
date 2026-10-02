@@ -332,7 +332,10 @@ public enum SidebarRowSize : Swift.Sendable {
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@available(anyAppleOS, deprecated: 27.0, message: "Use #Preview instead.")
+@available(macOS, deprecated: 27.0, message: "Use #Preview instead.")
+@available(iOS, deprecated: 27.0, message: "Use #Preview instead.")
+@available(tvOS, deprecated: 27.0, message: "Use #Preview instead.")
+@available(visionOS, deprecated: 27.0, message: "Use #Preview instead.")
 public enum PreviewPlatform : Swift.Sendable {
     case iOS
     case macOS
