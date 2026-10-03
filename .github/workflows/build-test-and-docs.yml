@@ -136,6 +136,11 @@ jobs:
     - name: Swift version
       run: swift --version
 
+    # The macOS image comes with SwiftFormat preinstalled, but we need a newer
+    # version (see Scripts/format.sh for version requirement)
+    - name: Install SwiftFormat
+      run: brew install swiftformat
+
     - uses: actions/checkout@v3
 
     - name: Run APITool analysis
